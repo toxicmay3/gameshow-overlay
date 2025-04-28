@@ -183,7 +183,7 @@ h1, h2 {
 }
 
 #spieleliste li {
-  font-size: 1.1rem; /* leicht kleinere Schrift */
-  text-align: center; /* mittig */
-  margin: 10px 0; /* weniger Abstand zwischen Spielen */
+  font-size: 1.0rem; /* Schrift leicht kleiner */
+  text-align: center;
+  margin: 8px 0; /* Abstand zwischen Spielen verkleinern */
 }
