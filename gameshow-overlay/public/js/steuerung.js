@@ -4,7 +4,7 @@ const socket = io();
 
 let score1 = 0;
 let score2 = 0;
-let aktuelleSpieleliste = []; // Struktur: [{ name: "Spiel 1", done: false }]
+let aktuelleSpieleliste = []; // Struktur: [{ name: "Spiel 1", done: false, winner: "" }]
 
 function showSavedMessage() {
   const msg = document.createElement('div');
@@ -51,7 +51,7 @@ function addGame() {
   const input = document.getElementById('newGame');
   const name = input.value.trim();
   if (name) {
-    aktuelleSpieleliste.push({ name: name, done: false });
+    aktuelleSpieleliste.push({ name: name, done: false, winner: "" });
     renderGameList();
     input.value = '';
     updateOverlay();
@@ -63,7 +63,14 @@ function renderGameList() {
   ul.innerHTML = '';
   aktuelleSpieleliste.forEach((spiel, index) => {
     const li = document.createElement('li');
-    li.textContent = spiel.name;
+
+    // Anzeigen: Name + Gewinner (wenn gesetzt)
+    let text = spiel.name;
+    if (spiel.winner) {
+      text += ` (${spiel.winner})`;
+    }
+    li.textContent = text;
+
     if (spiel.done) {
       li.classList.add('done');
     }
@@ -79,6 +86,21 @@ function renderGameList() {
     bearbeitenBtn.className = 'spiel-button';
     bearbeitenBtn.onclick = () => editGame(index);
 
+    const team1WinBtn = document.createElement('button');
+    team1WinBtn.textContent = '🏆 Team 1';
+    team1WinBtn.className = 'spiel-button';
+    team1WinBtn.onclick = () => setWinner(index, 'team1');
+
+    const team2WinBtn = document.createElement('button');
+    team2WinBtn.textContent = '🏆 Team 2';
+    team2WinBtn.className = 'spiel-button';
+    team2WinBtn.onclick = () => setWinner(index, 'team2');
+
+    const resetWinBtn = document.createElement('button');
+    resetWinBtn.textContent = '↩️ Gewinner löschen';
+    resetWinBtn.className = 'spiel-button';
+    resetWinBtn.onclick = () => resetWinner(index);
+
     const löschenBtn = document.createElement('button');
     löschenBtn.textContent = '🗑️';
     löschenBtn.className = 'spiel-button';
@@ -86,6 +108,9 @@ function renderGameList() {
 
     li.appendChild(erledigtBtn);
     li.appendChild(bearbeitenBtn);
+    li.appendChild(team1WinBtn);
+    li.appendChild(team2WinBtn);
+    li.appendChild(resetWinBtn);
     li.appendChild(löschenBtn);
 
     ul.appendChild(li);
@@ -113,6 +138,21 @@ function deleteGame(index) {
     renderGameList();
     updateOverlay();
   }
+}
+
+function setWinner(index, team) {
+  const teamName = team === 'team1' ? document.getElementById('team1Name').value : document.getElementById('team2Name').value;
+  if (teamName.trim() !== '') {
+    aktuelleSpieleliste[index].winner = teamName.trim();
+    renderGameList();
+    updateOverlay();
+  }
+}
+
+function resetWinner(index) {
+  aktuelleSpieleliste[index].winner = "";
+  renderGameList();
+  updateOverlay();
 }
 
 function swapTeams() {
@@ -160,7 +200,7 @@ function resetAll() {
   updateOverlay();
 }
 
-/* Aktuellen Status beim Start vom Server holen */
+/* Beim Verbinden aktuellen Status vom Server holen */
 socket.on('updateOverlay', (data) => {
   if (data.team1 !== undefined) document.getElementById('team1Name').value = data.team1;
   if (data.team2 !== undefined) document.getElementById('team2Name').value = data.team2;
