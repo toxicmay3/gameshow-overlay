@@ -1,0 +1,78 @@
+<!-- public/admin.html -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gameshow Admin</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <script defer src="js/steuerung.js"></script>
+</head>
+<body class="steuerung">
+
+<div id="login-screen">
+  <h2>Admin Login</h2>
+  <input type="password" id="password" placeholder="Passwort eingeben">
+  <button onclick="checkPassword()">Login</button>
+  <p id="login-message"></p>
+</div>
+
+<div id="admin-panel" style="display:none;">
+  <h1>Steuerung</h1>
+
+  <div class="input-row">
+    <label>Team 1 Name:</label>
+    <input id="team1Name" type="text">
+    <button onclick="save()">Speichern</button>
+  </div>
+
+  <div class="input-row">
+    <label>Team 2 Name:</label>
+    <input id="team2Name" type="text">
+    <button onclick="save()">Speichern</button>
+  </div>
+
+  <div class="input-row">
+    <button onclick="changeScore('score1', 1)">Team 1 +1</button>
+    <button onclick="changeScore('score1', -1)">Team 1 -1</button>
+    <button onclick="changeScore('score2', 1)">Team 2 +1</button>
+    <button onclick="changeScore('score2', -1)">Team 2 -1</button>
+  </div>
+
+  <div class="input-row">
+    <label>Neues Spiel:</label>
+    <input id="newGame" type="text">
+    <button onclick="addGame()">Hinzufügen</button>
+  </div>
+
+  <h2>Spieleübersicht</h2>
+  <ul id="spielelisteSteuerung"></ul>
+
+  <div class="input-row">
+    <button onclick="reset()">Alles zurücksetzen</button>
+  </div>
+</div>
+
+<script>
+function checkPassword() {
+  const pw = document.getElementById('password').value;
+  fetch('/check-password', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: pw })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('admin-panel').style.display = 'block';
+    } else {
+      document.getElementById('login-message').textContent = 'Falsches Passwort!';
+    }
+  });
+}
+</script>
+
+</body>
+</html>
