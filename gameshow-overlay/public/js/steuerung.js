@@ -4,7 +4,8 @@ const socket = io();
 
 let score1 = 0;
 let score2 = 0;
-let aktuelleSpieleliste = []; // Struktur: [{ name: "Spiel 1", done: false, winner: "" }]
+let aktuelleSpieleliste = []; // Struktur: [{ name: "Spielname", done: false, winner: "" }]
+let draggedIndex = null; // Für Drag & Drop
 
 function showSavedMessage() {
   const msg = document.createElement('div');
@@ -63,8 +64,23 @@ function renderGameList() {
   ul.innerHTML = '';
   aktuelleSpieleliste.forEach((spiel, index) => {
     const li = document.createElement('li');
+    li.classList.add('draggable');
+    li.setAttribute('draggable', true);
+    li.dataset.index = index;
 
-    // Anzeigen: Name + Gewinner (wenn gesetzt)
+    // Drag & Drop Events
+    li.ondragstart = (e) => {
+      draggedIndex = index;
+      e.dataTransfer.effectAllowed = 'move';
+    };
+    li.ondragover = (e) => e.preventDefault();
+    li.ondrop = (e) => {
+      e.preventDefault();
+      const targetIndex = Number(e.currentTarget.dataset.index);
+      moveGame(draggedIndex, targetIndex);
+    };
+
+    // Anzeigen: Name + Gewinner (wenn vorhanden)
     let text = spiel.name;
     if (spiel.winner) {
       text += ` (${spiel.winner})`;
@@ -87,17 +103,17 @@ function renderGameList() {
     bearbeitenBtn.onclick = () => editGame(index);
 
     const team1WinBtn = document.createElement('button');
-    team1WinBtn.textContent = '🏆 Team 1';
+    team1WinBtn.textContent = '🥇';
     team1WinBtn.className = 'spiel-button';
     team1WinBtn.onclick = () => setWinner(index, 'team1');
 
     const team2WinBtn = document.createElement('button');
-    team2WinBtn.textContent = '🏆 Team 2';
+    team2WinBtn.textContent = '🥈';
     team2WinBtn.className = 'spiel-button';
     team2WinBtn.onclick = () => setWinner(index, 'team2');
 
     const resetWinBtn = document.createElement('button');
-    resetWinBtn.textContent = '↩️ Gewinner löschen';
+    resetWinBtn.textContent = '↩️';
     resetWinBtn.className = 'spiel-button';
     resetWinBtn.onclick = () => resetWinner(index);
 
@@ -115,6 +131,14 @@ function renderGameList() {
 
     ul.appendChild(li);
   });
+}
+
+function moveGame(from, to) {
+  if (from === to) return;
+  const [movedItem] = aktuelleSpieleliste.splice(from, 1);
+  aktuelleSpieleliste.splice(to, 0, movedItem);
+  renderGameList();
+  updateOverlay();
 }
 
 function markGameDone(index) {
