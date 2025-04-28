@@ -1,44 +1,27 @@
 // public/js/overlay.js
-
 const socket = io();
 
-// Debug Panel Elemente
 const connectionStatus = document.getElementById('connection-status');
-const lastUpdate = document.getElementById('last-update');
+const lastUpdate       = document.getElementById('last-update');
 
-// Verbindung aufgebaut
-socket.on('connect', () => {
-  if (connectionStatus) connectionStatus.textContent = 'Verbunden ✅';
-});
+socket.on('connect',    () => connectionStatus.textContent = 'Verbunden ✅');
+socket.on('disconnect', () => connectionStatus.textContent = 'Getrennt ❌');
 
-// Verbindung getrennt
-socket.on('disconnect', () => {
-  if (connectionStatus) connectionStatus.textContent = 'Getrennt ❌';
-});
+socket.on('updateOverlay', (d) => {
+  lastUpdate.textContent = new Date().toLocaleTimeString();
 
-// Overlay aktualisieren bei neuen Daten
-socket.on('updateOverlay', (data) => {
-  if (lastUpdate) lastUpdate.textContent = new Date().toLocaleTimeString();
+  if (d.team1 !== undefined)
+    document.getElementById('team1').innerHTML = `${d.team1} <span class="score">${d.score1}</span>`;
+  if (d.team2 !== undefined)
+    document.getElementById('team2').innerHTML = `${d.team2} <span class="score">${d.score2}</span>`;
 
-  if (data.team1 !== undefined && data.score1 !== undefined) {
-    const team1Element = document.getElementById('team1');
-    if (team1Element) team1Element.innerHTML = `${data.team1} <span class="score" id="score1">${data.score1}</span>`;
-  }
-
-  if (data.team2 !== undefined && data.score2 !== undefined) {
-    const team2Element = document.getElementById('team2');
-    if (team2Element) team2Element.innerHTML = `${data.team2} <span class="score" id="score2">${data.score2}</span>`;
-  }
-
-  if (data.spieleliste !== undefined) {
-    const liste = document.getElementById('spieleliste');
-    if (liste) {
-      liste.innerHTML = '';
-      data.spieleliste.forEach(spiel => {
-        const li = document.createElement('li');
-        li.textContent = spiel;
-        liste.appendChild(li);
-      });
-    }
+  if (d.spieleliste !== undefined) {
+    const ul = document.getElementById('spieleliste');
+    ul.innerHTML = '';
+    d.spieleliste.forEach((s) => {
+      const li = document.createElement('li');
+      li.textContent = s;
+      ul.appendChild(li);
+    });
   }
 });
