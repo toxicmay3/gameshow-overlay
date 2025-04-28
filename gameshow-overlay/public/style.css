@@ -1,71 +1,63 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2822
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+/* public/style.css */
 
-\f0\fs24 \cf0 /* public/style.css */\
-\
-/* Allgemeine Einstellungen */\
-body \{\
-  font-family: Arial, sans-serif;\
-  background: #0d0d0d;\
-  color: #f1f1f1;\
-  display: flex;\
-  flex-direction: column;\
-  align-items: center;\
-  justify-content: center;\
-  height: 100vh;\
-  margin: 0;\
-\}\
-\
-/* Overlay Styling */\
-#overlay \{\
-  text-align: center;\
-\}\
-\
-#overlay h1 \{\
-  font-size: 3rem;\
-  margin-bottom: 1rem;\
-\}\
-\
-#overlay p \{\
-  font-size: 2rem;\
-\}\
-\
-/* Admin Login */\
-#login-screen \{\
-  text-align: center;\
-\}\
-\
-#login-screen input \{\
-  padding: 0.5rem;\
-  margin: 0.5rem 0;\
-  width: 200px;\
-\}\
-\
-#login-screen button \{\
-  padding: 0.5rem 1rem;\
-  margin-top: 0.5rem;\
-  cursor: pointer;\
-\}\
-\
-/* Admin Panel */\
-#admin-panel \{\
-  text-align: center;\
-\}\
-\
-#admin-panel input \{\
-  padding: 0.5rem;\
-  margin: 0.5rem 0;\
-  width: 300px;\
-  display: block;\
-\}\
-\
-#admin-panel button \{\
-  padding: 0.5rem 2rem;\
-  margin-top: 1rem;\
-  cursor: pointer;\
-\}\
+/* Allgemeine Einstellungen */
+body {
+  font-family: Arial, sans-serif;
+  background: #0d0d0d;
+  color: #f1f1f1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* Overlay Styling */
+#overlay {
+  text-align: center;
+}
+
+#overlay h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+#overlay p {
+  font-size: 2rem;
+}
+
+/* Admin Login */
+#login-screen {
+  text-align: center;
+}
+
+#login-screen input {
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  width: 200px;
+}
+
+#login-screen button {
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+}
+
+/* Admin Panel */
+#admin-panel {
+  text-align: center;
+}
+
+#admin-panel input {
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  width: 300px;
+  display: block;
+}
+
+#admin-panel button {
+  padding: 0.5rem 2rem;
+  margin-top: 1rem;
+  cursor: pointer;
 }
