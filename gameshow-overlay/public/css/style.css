@@ -5,61 +5,62 @@ body {
   color: white;
 }
 
-#teamscore {
-  text-align: center;
-  margin-top: 20px;
+#teams {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 20px;
 }
 
-h1 {
-  margin: 5px;
+#teams > div {
   font-size: 2rem;
+  margin-bottom: 10px;
 }
 
 .score {
-  font-weight: bold;
   margin-left: 10px;
+  font-weight: bold;
 }
 
-h2 {
+#spielekasten {
+  background: rgba(0, 0, 0, 0.6); /* Schwarz transparent */
+  padding: 10px;
+  margin: 20px;
+  width: 250px;
+  border-radius: 10px;
+}
+
+.header {
   text-align: center;
-  margin-top: 30px;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  border-bottom: 1px solid white;
+  padding-bottom: 5px;
 }
 
 .spieleliste-container {
-  margin: 30px auto;
-  width: 80%;
   overflow: hidden;
-  height: 400px; /* Sichtfenster für Spiele */
+  height: 200px; /* Höhe für sichtbare Spiele */
   position: relative;
 }
 
 #spieleliste {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
   position: absolute;
   width: 100%;
 }
 
 #spieleliste li {
-  font-size: 1.5rem;
-  margin: 20px 0;
+  font-size: 1.2rem;
   text-align: center;
+  margin: 15px 0;
 }
 
-/* Debug/Steuerung unten */
-#controls {
-  margin-top: 20px;
+/* Debug Anzeige */
+#connection-status, #last-update {
+  font-size: 0.8rem;
   text-align: center;
-}
-
-button {
-  background: white;
-  color: black;
-  border: none;
-  padding: 10px 15px;
-  margin: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 8px;
+  margin-top: 10px;
 }
