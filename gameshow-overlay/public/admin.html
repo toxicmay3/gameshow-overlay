@@ -9,10 +9,18 @@
   <script src="/socket.io/socket.io.js"></script>
   <script defer src="js/steuerung.js"></script>
   <style>
-    /* Schrift schwarz für Admin-Seite */
     body.steuerung {
       color: black;
       background-color: white;
+    }
+    .spieleliste-wrapper li.done {
+      text-decoration: line-through;
+      color: grey;
+    }
+    button.spiel-button {
+      margin-left: 0.5rem;
+      padding: 2px 6px;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -30,6 +38,7 @@
 <div id="admin-panel" style="display:none;">
   <h1>Steuerung</h1>
 
+  <!-- Team-Namen -->
   <div class="input-row">
     <label>Team 1 Name:</label>
     <input id="team1Name" type="text">
@@ -42,6 +51,7 @@
     <button onclick="save()">Speichern</button>
   </div>
 
+  <!-- Punktestand -->
   <div class="input-row">
     <span>Team 1 Punkte: <strong id="score1Display">0</strong></span>
     <span style="margin-left:2rem;">Team 2 Punkte: <strong id="score2Display">0</strong></span>
@@ -54,6 +64,16 @@
     <button onclick="changeScore('team2', -1)">Team 2 -1</button>
   </div>
 
+  <!-- Aktionen -->
+  <div class="input-row">
+    <button onclick="swapTeams()">Teams tauschen</button>
+    <button onclick="markWinner('team1')">Team 1 gewinnt</button>
+    <button onclick="markWinner('team2')">Team 2 gewinnt</button>
+    <button onclick="removeTeam('team1')">Team 1 löschen</button>
+    <button onclick="removeTeam('team2')">Team 2 löschen</button>
+  </div>
+
+  <!-- Neue Spiele hinzufügen -->
   <div class="input-row">
     <label>Neues Spiel:</label>
     <input id="newGame" type="text">
@@ -61,7 +81,9 @@
   </div>
 
   <h2>Spieleübersicht</h2>
-  <ul id="spielelisteSteuerung"></ul>
+  <div class="spieleliste-wrapper">
+    <ul id="spielelisteSteuerung"></ul>
+  </div>
 
   <div class="input-row">
     <button onclick="resetAll()">Alles zurücksetzen</button>
@@ -69,7 +91,6 @@
 </div>
 
 <script>
-/* Passwortprüfung */
 function checkPassword() {
   const pw = document.getElementById('password').value;
   fetch('/check-password', {
