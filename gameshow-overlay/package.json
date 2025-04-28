@@ -1,7 +1,7 @@
 {
-  "name": "gameshow-overlay",
+  "name": "gameshow-website",
   "version": "1.0.0",
-  "description": "Overlay Steuerung für Gameshow",
+  "description": "Komplette Gameshow Overlay Website",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
