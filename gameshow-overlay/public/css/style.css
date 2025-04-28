@@ -5,64 +5,35 @@ body {
   color: white;
 }
 
-#main-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin: 30px;
+h1, h2 {
+  margin: 10px;
 }
 
-#teams {
-  margin-bottom: 20px;
-}
-
-#teams > div {
+h1 {
   font-size: 2rem;
-  margin-bottom: 10px;
-  text-align: left;
 }
 
-.score {
-  margin-left: 10px;
-  font-weight: bold;
-}
-
-#spielekasten {
-  background: rgba(0, 0, 0, 0.6); /* Schwarz transparent */
-  padding: 10px;
-  width: 250px; /* --> Jetzt schmaler */
-  border-radius: 10px;
-}
-
-.header {
-  text-align: center;
+h2 {
   font-size: 1.5rem;
-  margin-bottom: 10px;
-  padding-bottom: 5px;
-  border-bottom: 1px solid white;
-}
-
-.spieleliste-container {
-  overflow: hidden;
-  height: 300px; /* Platz für ca. 5 Spiele */
-  position: relative;
 }
 
 #spieleliste {
   list-style: none;
   padding: 0;
-  margin: 0;
-  position: absolute;
-  width: 100%;
+  margin: 20px 10px;
 }
 
 #spieleliste li {
   font-size: 1.2rem;
-  text-align: center;
-  margin: 20px 0;
+  margin: 15px 0;
 }
 
-/* Debug Anzeigen */
+.score {
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+/* Debugbereich */
 #connection-status, #last-update {
   font-size: 0.8rem;
   text-align: center;
