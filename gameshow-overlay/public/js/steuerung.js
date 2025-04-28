@@ -2,12 +2,25 @@
 
 const socket = io();
 
-/* Punkt-Variablen */
 let score1 = 0;
 let score2 = 0;
-
-/* Spieleliste */
 let aktuelleSpieleliste = [];
+
+/* Speichernachricht zeigen */
+function showSavedMessage() {
+  const msg = document.createElement('div');
+  msg.textContent = '✅ Gespeichert!';
+  msg.style.position = 'fixed';
+  msg.style.top = '10px';
+  msg.style.right = '10px';
+  msg.style.background = 'green';
+  msg.style.color = 'white';
+  msg.style.padding = '10px';
+  msg.style.borderRadius = '8px';
+  msg.style.zIndex = '9999';
+  document.body.appendChild(msg);
+  setTimeout(() => document.body.removeChild(msg), 2000);
+}
 
 /* Overlay sofort aktualisieren */
 function updateOverlay() {
@@ -18,6 +31,7 @@ function updateOverlay() {
     score2     : score2,
     spieleliste: aktuelleSpieleliste
   });
+  showSavedMessage(); // ✅ Nachricht nach dem Update
 }
 
 /* Team-Namen speichern */
@@ -72,7 +86,7 @@ function resetAll() {
   updateOverlay();
 }
 
-/* 📦 Beim Verbinden: aktuellen Status vom Server holen */
+/* Beim Verbinden aktuellen Status vom Server holen */
 socket.on('updateOverlay', (data) => {
   if (data.team1 !== undefined) document.getElementById('team1Name').value = data.team1;
   if (data.team2 !== undefined) document.getElementById('team2Name').value = data.team2;
