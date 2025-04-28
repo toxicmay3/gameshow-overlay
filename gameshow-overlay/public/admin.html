@@ -17,6 +17,9 @@
       text-decoration: line-through;
       color: grey;
     }
+    li.draggable {
+      cursor: move;
+    }
     button.spiel-button {
       margin-left: 0.5rem;
       padding: 2px 6px;
@@ -80,7 +83,7 @@
     <button onclick="addGame()">Hinzufügen</button>
   </div>
 
-  <h2>Spieleübersicht</h2>
+  <h2>Spieleübersicht (ziehbar)</h2>
   <div class="spieleliste-wrapper">
     <ul id="spielelisteSteuerung"></ul>
   </div>
