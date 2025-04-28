@@ -10,7 +10,7 @@ const io = new Server(http);
 const PORT = process.env.PORT || 3000;
 
 // Zum Schutz Admin Passwort
-const ADMIN_PASSWORD = "admin1234"; // <-- kannst du später ändern
+const ADMIN_PASSWORD = "admin1234"; // Später leicht änderbar
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -20,9 +20,9 @@ app.get('/overlay', (req, res) => {
   res.sendFile(__dirname + '/public/overlay.html');
 });
 
-// Route für Admin
+// Route für Steuerung (Admin)
 app.get('/admin', (req, res) => {
-  res.sendFile(__dirname + '/public/admin.html');
+  res.sendFile(__dirname + '/public/steuerung.html');
 });
 
 // API zum Checken des Passworts
