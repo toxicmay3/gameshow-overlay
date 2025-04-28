@@ -5,11 +5,11 @@ body {
   color: white;
 }
 
-#overlay-container {
+#main-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin: 20px;
+  margin: 30px;
 }
 
 #teams {
@@ -19,6 +19,7 @@ body {
 #teams > div {
   font-size: 2rem;
   margin-bottom: 10px;
+  text-align: left;
 }
 
 .score {
@@ -30,6 +31,7 @@ body {
   background: rgba(0, 0, 0, 0.6); /* Schwarz transparent */
   padding: 10px;
   width: 300px;
+  border: 2px solid red; /* optional: roter Rand wie auf deiner Skizze */
   border-radius: 10px;
 }
 
@@ -37,13 +39,12 @@ body {
   text-align: center;
   font-size: 1.5rem;
   margin-bottom: 10px;
-  border-bottom: 1px solid white;
   padding-bottom: 5px;
 }
 
 .spieleliste-container {
   overflow: hidden;
-  height: 300px; /* Höhe für genau 5 Spiele */
+  height: 300px; /* Platz für ca. 5 Spiele */
   position: relative;
 }
 
@@ -58,10 +59,10 @@ body {
 #spieleliste li {
   font-size: 1.2rem;
   text-align: center;
-  margin: 20px 0; /* Abstand, damit 5 Spiele reinpassen */
+  margin: 20px 0;
 }
 
-/* Debug Anzeigen */
+/* Debug Bereich */
 #connection-status, #last-update {
   font-size: 0.8rem;
   text-align: center;
