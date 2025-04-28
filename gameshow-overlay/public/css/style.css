@@ -185,5 +185,5 @@ h1, h2 {
 #spieleliste li {
   font-size: 1.0rem; /* Schrift leicht kleiner */
   text-align: center;
-  margin: 8px 0; /* Abstand zwischen Spielen verkleinern */
+  margin: 5px 0; /* Abstand zwischen Spielen verkleinern */
 }
