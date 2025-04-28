@@ -25,7 +25,7 @@ function save() {
   updateOverlay();
 }
 
-/* Punkte ändern */
+/* Punkte verändern */
 function changeScore(team, delta) {
   if (team === 'team1') {
     score1 += delta;
@@ -49,13 +49,13 @@ function addGame() {
   }
 }
 
-/* Spieleliste anzeigen */
+/* Spieleliste neu aufbauen */
 function renderGameList() {
   const ul = document.getElementById('spielelisteSteuerung');
   ul.innerHTML = '';
-  aktuelleSpieleliste.forEach((s) => {
+  aktuelleSpieleliste.forEach((spiel) => {
     const li = document.createElement('li');
-    li.textContent = s;
+    li.textContent = spiel;
     ul.appendChild(li);
   });
 }
@@ -71,3 +71,21 @@ function resetAll() {
   renderGameList();
   updateOverlay();
 }
+
+/* 📦 Beim Verbinden: aktuellen Status vom Server holen */
+socket.on('updateOverlay', (data) => {
+  if (data.team1 !== undefined) document.getElementById('team1Name').value = data.team1;
+  if (data.team2 !== undefined) document.getElementById('team2Name').value = data.team2;
+  if (data.score1 !== undefined) {
+    score1 = data.score1;
+    document.getElementById('score1Display').textContent = score1;
+  }
+  if (data.score2 !== undefined) {
+    score2 = data.score2;
+    document.getElementById('score2Display').textContent = score2;
+  }
+  if (data.spieleliste !== undefined) {
+    aktuelleSpieleliste = data.spieleliste;
+    renderGameList();
+  }
+});
