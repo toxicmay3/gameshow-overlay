@@ -181,3 +181,9 @@ h1, h2 {
 #spielelisteSteuerung button:hover {
   opacity: 0.8;
 }
+
+#spieleliste li {
+  font-size: 1.1rem; /* leicht kleinere Schrift */
+  text-align: center; /* mittig */
+  margin: 10px 0; /* weniger Abstand zwischen Spielen */
+}
