@@ -3,10 +3,8 @@ const socket = io();
 const connectionStatus = document.getElementById('connection-status');
 const lastUpdate = document.getElementById('last-update');
 
-let scrollContainer;
-let scrollList;
 let animationFrame;
-let scrollSpeed = 0.5; // Geschwindigkeit des Scrollens (kleiner = langsamer)
+let scrollSpeed = 0.5; // Geschwindigkeit
 
 socket.on('connect', () => {
   if (connectionStatus) connectionStatus.textContent = 'Verbunden ✅';
@@ -27,8 +25,8 @@ socket.on('updateOverlay', (data) => {
   }
 
   if (data.spieleliste !== undefined) {
-    const listeWrapper = document.getElementById('spieleliste');
-    listeWrapper.innerHTML = '';
+    const liste = document.getElementById('spieleliste');
+    liste.innerHTML = '';
 
     data.spieleliste.forEach((spiel) => {
       const li = document.createElement('li');
@@ -44,51 +42,31 @@ socket.on('updateOverlay', (data) => {
         li.style.color = 'grey';
       }
 
-      listeWrapper.appendChild(li);
+      liste.appendChild(li);
     });
 
-    // Nach Update neue Scroll-Animation starten
-    prepareScrolling();
+    startScrolling();
   }
 });
 
-// Scroll-Logik
-function prepareScrolling() {
+// Scroll Animation
+function startScrolling() {
   cancelAnimationFrame(animationFrame);
 
-  scrollContainer = document.querySelector('.spieleliste-container');
-  scrollList = document.querySelector('.spieleliste-wrapper');
-
-  if (!scrollContainer || !scrollList) return;
-
-  // Vorherige Clone entfernen
-  const originalList = scrollList.querySelector('ul');
-  const existingClone = scrollList.querySelector('ul.clone');
-  if (existingClone) {
-    scrollList.removeChild(existingClone);
-  }
-
-  const clone = originalList.cloneNode(true);
-  clone.classList.add('clone');
-  clone.style.marginTop = '20px'; // Abstand zwischen Original und Clone
-  scrollList.appendChild(clone);
-
-  scrollList.style.transform = 'translateY(0px)';
-  startScrolling();
-}
-
-function startScrolling() {
+  const liste = document.getElementById('spieleliste');
   let pos = 0;
-  const totalHeight = scrollList.scrollHeight / 2;
+  const totalHeight = liste.scrollHeight;
 
   function step() {
     pos -= scrollSpeed;
     if (Math.abs(pos) >= totalHeight) {
       pos = 0; // Weiches Zurücksetzen
     }
-    scrollList.style.transform = `translateY(${pos}px)`;
+    liste.style.transform = `translateY(${pos}px)`;
     animationFrame = requestAnimationFrame(step);
   }
 
-  step();
+  liste.style.transition = 'none';
+  liste.style.transform = 'translateY(0px)';
+  animationFrame = requestAnimationFrame(step);
 }
