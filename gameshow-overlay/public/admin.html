@@ -11,6 +11,7 @@
 </head>
 <body class="steuerung">
 
+<!-- Login –––––––––––––––––––––––––––––––––––––––––––––––––– -->
 <div id="login-screen">
   <h2>Admin Login</h2>
   <input type="password" id="password" placeholder="Passwort eingeben">
@@ -18,9 +19,11 @@
   <p id="login-message"></p>
 </div>
 
+<!-- Admin-Panel –––––––––––––––––––––––––––––––––––––––––––– -->
 <div id="admin-panel" style="display:none;">
   <h1>Steuerung</h1>
 
+  <!-- Team-Namen -->
   <div class="input-row">
     <label>Team 1 Name:</label>
     <input id="team1Name" type="text">
@@ -33,13 +36,20 @@
     <button onclick="save()">Speichern</button>
   </div>
 
+  <!-- Punktestand -->
   <div class="input-row">
-    <button onclick="changeScore('score1', 1)">Team 1 +1</button>
-    <button onclick="changeScore('score1', -1)">Team 1 -1</button>
-    <button onclick="changeScore('score2', 1)">Team 2 +1</button>
-    <button onclick="changeScore('score2', -1)">Team 2 -1</button>
+    <span>Team 1 Punkte: <strong id="score1Display">0</strong></span>
+    <span style="margin-left:2rem;">Team 2 Punkte: <strong id="score2Display">0</strong></span>
   </div>
 
+  <div class="input-row">
+    <button onclick="changeScore('team1', 1)">Team 1 +1</button>
+    <button onclick="changeScore('team1', -1)">Team 1 -1</button>
+    <button onclick="changeScore('team2', 1)">Team 2 +1</button>
+    <button onclick="changeScore('team2', -1)">Team 2 -1</button>
+  </div>
+
+  <!-- Spiele hinzufügen -->
   <div class="input-row">
     <label>Neues Spiel:</label>
     <input id="newGame" type="text">
@@ -50,11 +60,12 @@
   <ul id="spielelisteSteuerung"></ul>
 
   <div class="input-row">
-    <button onclick="reset()">Alles zurücksetzen</button>
+    <button onclick="resetAll()">Alles zurücksetzen</button>
   </div>
 </div>
 
 <script>
+/* Passwortprüfung –––––––––––––––––––––––––––––––––––––––––– */
 function checkPassword() {
   const pw = document.getElementById('password').value;
   fetch('/check-password', {
@@ -62,9 +73,9 @@ function checkPassword() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ password: pw })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.success) {
+  .then(r => r.json())
+  .then(d => {
+    if (d.success) {
       document.getElementById('login-screen').style.display = 'none';
       document.getElementById('admin-panel').style.display = 'block';
     } else {
