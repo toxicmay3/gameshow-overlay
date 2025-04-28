@@ -12,21 +12,23 @@
 <body>
 
 <div class="left-column">
-
-  <!-- Teams oben -->
   <div class="teams">
     <div class="team" id="team1">Team 1 <span class="score" id="score1">0</span></div>
     <div class="team" id="team2">Team 2 <span class="score" id="score2">0</span></div>
   </div>
 
-  <!-- Spieleliste darunter -->
   <div class="spieleliste-container">
     <div class="spieleliste-header">Spieleübersicht</div>
     <div class="spieleliste-wrapper">
       <ul id="spieleliste"></ul>
     </div>
   </div>
+</div>
 
+<!-- Debug Panel -->
+<div id="debug-panel" style="position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 10px; font-size: 12px; border-radius: 8px; z-index: 9999;">
+  Status: <span id="connection-status">Verbindung wird aufgebaut...</span><br>
+  Letztes Update: <span id="last-update">Keine Daten</span>
 </div>
 
 </body>
