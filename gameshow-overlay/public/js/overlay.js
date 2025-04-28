@@ -4,7 +4,7 @@ const connectionStatus = document.getElementById('connection-status');
 const lastUpdate = document.getElementById('last-update');
 
 let animationFrame;
-let scrollSpeed = 0.3; // langsam
+let scrollSpeed = 0.3; // langsam und angenehm
 
 socket.on('connect', () => {
   if (connectionStatus) connectionStatus.textContent = 'Verbunden ✅';
