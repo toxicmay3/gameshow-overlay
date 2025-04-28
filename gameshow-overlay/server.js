@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 // Zum Schutz Admin Passwort
 const ADMIN_PASSWORD = "admin1234"; // Später leicht änderbar
 
+// Statische Dateien aus dem 'public'-Ordner bereitstellen
 app.use(express.static('public'));
 app.use(express.json());
 
@@ -35,12 +36,13 @@ app.post('/check-password', (req, res) => {
   }
 });
 
-// Websocket-Verbindung
+// WebSocket-Verbindung
 io.on('connection', (socket) => {
   console.log('Ein Client verbunden.');
 
   socket.on('updateOverlay', (data) => {
-    socket.broadcast.emit('updateOverlay', data);
+    // Änderung: Nachricht an ALLE Clients senden, nicht nur an andere
+    io.emit('updateOverlay', data);
   });
 
   socket.on('disconnect', () => {
