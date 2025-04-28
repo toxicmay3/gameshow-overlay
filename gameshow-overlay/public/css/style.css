@@ -30,8 +30,7 @@ body {
 #spielekasten {
   background: rgba(0, 0, 0, 0.6); /* Schwarz transparent */
   padding: 10px;
-  width: 300px;
-  border: 2px solid red; /* optional: roter Rand wie auf deiner Skizze */
+  width: 250px; /* --> Jetzt schmaler */
   border-radius: 10px;
 }
 
@@ -40,6 +39,7 @@ body {
   font-size: 1.5rem;
   margin-bottom: 10px;
   padding-bottom: 5px;
+  border-bottom: 1px solid white;
 }
 
 .spieleliste-container {
@@ -62,7 +62,7 @@ body {
   margin: 20px 0;
 }
 
-/* Debug Bereich */
+/* Debug Anzeigen */
 #connection-status, #last-update {
   font-size: 0.8rem;
   text-align: center;
