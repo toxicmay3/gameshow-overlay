@@ -5,13 +5,14 @@ const app = express();
 const http = require('http').createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(http);
+const fs = require('fs');
+const path = require('path');
 
 const PORT = process.env.PORT || 3000;
+const BACKUP_FILE = path.join(__dirname, 'backup.json');
+const ADMIN_PASSWORD = "admin1234";
 
-// Admin Passwort
-const ADMIN_PASSWORD = "admin1234"; // Hier dein Passwort
-
-// 📦 Speicherung der aktuellen Einstellungen
+// 📦 Speicher für aktuellen Status
 let aktuellerStatus = {
   team1: "",
   team2: "",
@@ -20,47 +21,59 @@ let aktuellerStatus = {
   spieleliste: []
 };
 
+/* Backup beim Start laden */
+if (fs.existsSync(BACKUP_FILE)) {
+  const data = fs.readFileSync(BACKUP_FILE, 'utf-8');
+  aktuellerStatus = JSON.parse(data);
+  console.log("✅ Backup erfolgreich geladen.");
+} else {
+  console.log("⚠️ Kein Backup gefunden, starte leer.");
+}
+
 // Öffentlichen Ordner bereitstellen
 app.use(express.static('public'));
 app.use(express.json());
 
-// Zuschauer-Overlay
+// Zuschauer Overlay
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
 
-// Admin-Steuerung
+// Admin Steuerung
 app.get('/admin', (req, res) => {
   res.sendFile(__dirname + '/public/admin.html');
 });
 
-// Passwort-Überprüfung
+// Passwort Check
 app.post('/check-password', (req, res) => {
   const { password } = req.body;
-  if (password === ADMIN_PASSWORD) {
-    res.json({ success: true });
-  } else {
-    res.json({ success: false });
-  }
+  res.json({ success: password === ADMIN_PASSWORD });
 });
 
-// WebSocket-Verbindungen behandeln
+// WebSocket-Verbindungen
 io.on('connection', (socket) => {
   console.log('Ein Client verbunden.');
 
-  // ❗ Beim neuen Verbinden: aktuellen Stand an den neuen Client schicken
+  // Aktuellen Status senden
   socket.emit('updateOverlay', aktuellerStatus);
 
-  // Wenn Admin Änderungen sendet → Status aktualisieren und allen schicken
+  // Änderungen empfangen
   socket.on('updateOverlay', (data) => {
-    aktuellerStatus = { ...data }; // Überschreibe gespeicherten Status
-    io.emit('updateOverlay', aktuellerStatus); // An ALLE senden
+    aktuellerStatus = { ...data };
+    io.emit('updateOverlay', aktuellerStatus);
+    saveBackup();
   });
 
   socket.on('disconnect', () => {
     console.log('Ein Client hat die Verbindung getrennt.');
   });
 });
+
+/* Backup speichern */
+function saveBackup() {
+  fs.writeFileSync(BACKUP_FILE, JSON.stringify(aktuellerStatus, null, 2));
+  console.log("💾 Backup gespeichert.");
+}
 
 // Server starten
 http.listen(PORT, () => {
