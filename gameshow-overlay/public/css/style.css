@@ -5,17 +5,61 @@ body {
   color: white;
 }
 
-h1, h2 {
-  margin: 10px;
+#teamscore {
+  text-align: center;
+  margin-top: 20px;
+}
+
+h1 {
+  margin: 5px;
+  font-size: 2rem;
+}
+
+.score {
+  font-weight: bold;
+  margin-left: 10px;
+}
+
+h2 {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.spieleliste-container {
+  margin: 30px auto;
+  width: 80%;
+  overflow: hidden;
+  height: 400px; /* Sichtfenster für Spiele */
+  position: relative;
 }
 
 #spieleliste {
   list-style: none;
   padding: 0;
-  margin-top: 20px;
+  margin: 0;
+  position: absolute;
+  width: 100%;
 }
 
 #spieleliste li {
   font-size: 1.5rem;
-  margin: 15px 0;
+  margin: 20px 0;
+  text-align: center;
+}
+
+/* Debug/Steuerung unten */
+#controls {
+  margin-top: 20px;
+  text-align: center;
+}
+
+button {
+  background: white;
+  color: black;
+  border: none;
+  padding: 10px 15px;
+  margin: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
 }
