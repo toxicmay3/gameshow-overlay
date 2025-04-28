@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Gameshow Steuerung</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="js/steuerung.js"></script>
+</head>
+<body class="steuerung">
+
+<h1>Steuerung</h1>
+
+<div class="input-row">
+  <label>Team 1 Name:</label>
+  <input id="team1Name" type="text">
+  <button onclick="save()">Speichern</button>
+</div>
+
+<div class="input-row">
+  <label>Team 2 Name:</label>
+  <input id="team2Name" type="text">
+  <button onclick="save()">Speichern</button>
+</div>
+
+<div class="input-row">
+  <button onclick="changeScore('score1', 1)">Team 1 +1</button>
+  <button onclick="changeScore('score1', -1)">Team 1 -1</button>
+  <button onclick="changeScore('score2', 1)">Team 2 +1</button>
+  <button onclick="changeScore('score2', -1)">Team 2 -1</button>
+</div>
+
+<div class="input-row">
+  <label>Neues Spiel:</label>
+  <input id="newGame" type="text">
+  <button onclick="addGame()">Hinzufügen</button>
+</div>
+
+<h2>Spieleübersicht</h2>
+<ul id="spielelisteSteuerung"></ul>
+
+<div class="input-row">
+  <button onclick="reset()">Alles zurücksetzen</button>
+</div>
+
+</body>
+</html>

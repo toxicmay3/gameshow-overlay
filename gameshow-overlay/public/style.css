@@ -1,63 +1,184 @@
-/* public/style.css */
-
-/* Allgemeine Einstellungen */
-body {
-  font-family: Arial, sans-serif;
-  background: #0d0d0d;
-  color: #f1f1f1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+html, body {
+  width: 1920px;
+  height: 1080px;
   margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+  background: transparent;
+  color: white;
 }
 
-/* Overlay Styling */
-#overlay {
-  text-align: center;
-}
-
-#overlay h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-#overlay p {
-  font-size: 2rem;
-}
-
-/* Admin Login */
-#login-screen {
-  text-align: center;
-}
-
-#login-screen input {
-  padding: 0.5rem;
-  margin: 0.5rem 0;
-  width: 200px;
-}
-
-#login-screen button {
-  padding: 0.5rem 1rem;
-  margin-top: 0.5rem;
-  cursor: pointer;
-}
-
-/* Admin Panel */
-#admin-panel {
-  text-align: center;
-}
-
-#admin-panel input {
-  padding: 0.5rem;
-  margin: 0.5rem 0;
+/* Linke Spalte */
+.left-column {
+  position: absolute;
+  top: 150px; /* Start weiter unten */
+  left: 30px; /* Direkt am linken Rand */
   width: 300px;
-  display: block;
 }
 
-#admin-panel button {
-  padding: 0.5rem 2rem;
-  margin-top: 1rem;
+/* Teams */
+.teams {
+  margin-bottom: 30px;
+}
+
+.team {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.score {
+  font-size: 32px;
+  margin-left: 10px;
+}
+
+/* Spieleliste */
+.spieleliste-container {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  padding: 10px;
+  overflow: hidden;
+  width: 250px;
+  height: 260px; /* Platz für 5 Spiele */
+}
+
+.spieleliste-header {
+  font-size: 24px;
+  margin-bottom: 10px;
+  text-align: center;
+  height: 30px;
+}
+
+.spieleliste-wrapper {
+  height: 260px;
+  overflow: hidden;
+  position: relative;
+}
+
+#spieleliste {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  
+  animation: scrollSpiele 60s linear infinite;
+}
+
+#spieleliste li {
+  height: 46px;
+  line-height: 46px;
+  text-align: center;
+}
+
+#spieleliste li.completed,
+#spielelisteSteuerung li.completed {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+/* Scroll Animation */
+@keyframes scrollSpiele {
+  0% {
+    top: 0;
+  }
+  100% {
+    top: -calc(46px * var(--spiele-count));
+  }
+}
+.steuerung {
+  margin-left: 30px; /* Links 30px Abstand */
+  max-width: 700px;
+}
+
+h1, h2 {
+  margin-bottom: 20px;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.input-row label {
+  min-width: 100px;
+}
+
+.input-row input {
+  width: 180px;
+  padding: 5px;
+}
+
+.input-row button {
+  padding: 6px 12px;
   cursor: pointer;
 }
+
+#spielelisteSteuerung button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+#spielelisteSteuerung button {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 5px;
+  padding: 2px 5px;
+}
+
+/* Farben */
+.done-button {
+  color: limegreen;
+}
+
+.edit-button {
+  color: deepskyblue;
+}
+
+.delete-button {
+  color: red;
+}
+
+.save-button {
+  color: gold;
+}
+
+.move-button {
+  color: orange;
+}
+
+#spielelisteSteuerung button:hover {
+  opacity: 0.8;
+}
+/* Buttons allgemeiner Stil */
+#spielelisteSteuerung button {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 5px;
+  padding: 2px 5px;
+}
+
+/* Farben */
+.done-button { color: limegreen; }
+.edit-button { color: deepskyblue; }
+.delete-button { color: red; }
+.save-button { color: gold; }
+.move-button { color: orange; }
+.winner1-button { color: gold; }
+.winner2-button { color: silver; }
+
+#spielelisteSteuerung button:hover {
+  opacity: 0.8;
+}
+
