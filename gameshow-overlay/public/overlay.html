@@ -2,27 +2,29 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gameshow Overlay</title>
   <link rel="stylesheet" href="css/style.css">
-  <script src="/socket.io/socket.io.js"></script>
   <script defer src="js/overlay.js"></script>
 </head>
 <body>
 
-<h1 id="team1">Team 1 <span class="score">0</span></h1>
-<h1 id="team2">Team 2 <span class="score">0</span></h1>
+<div class="left-column">
 
-<h2>Spiele:</h2>
-<div class="spieleliste-container">
-  <div class="spieleliste-wrapper">
-    <ul id="spieleliste"></ul>
+  <!-- Teams oben -->
+  <div class="teams">
+    <div class="team" id="team1">Team 1 <span class="score" id="score1">0</span></div>
+    <div class="team" id="team2">Team 2 <span class="score" id="score2">0</span></div>
   </div>
-</div>
 
-<!-- Optional für Debug -->
-<div id="connection-status"></div>
-<div id="last-update"></div>
+  <!-- Spieleliste darunter -->
+  <div class="spieleliste-container">
+    <div class="spieleliste-header">SpieleÃ¼bersicht</div>
+    <div class="spieleliste-wrapper">
+      <ul id="spieleliste"></ul>
+    </div>
+  </div>
+
+</div>
 
 </body>
 </html>
