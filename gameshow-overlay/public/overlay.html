@@ -1,30 +1,44 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <title>Gameshow Overlay</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script defer src="js/overlay.js"></script>
-</head>
-<body>
+// public/js/overlay.js
 
-<div class="left-column">
+// WebSocket Verbindung aufbauen
+const socket = io();
 
-  <!-- Teams oben -->
-  <div class="teams">
-    <div class="team" id="team1">Team 1 <span class="score" id="score1">0</span></div>
-    <div class="team" id="team2">Team 2 <span class="score" id="score2">0</span></div>
-  </div>
+// Debug Panel Referenzen
+const connectionStatus = document.getElementById('connection-status');
+const lastUpdate = document.getElementById('last-update');
 
-  <!-- Spieleliste darunter -->
-  <div class="spieleliste-container">
-    <div class="spieleliste-header">SpieleÃ¼bersicht</div>
-    <div class="spieleliste-wrapper">
-      <ul id="spieleliste"></ul>
-    </div>
-  </div>
+// Socket Status anzeigen
+socket.on('connect', () => {
+  if (connectionStatus) connectionStatus.textContent = 'Verbunden ✅';
+});
 
-</div>
+socket.on('disconnect', () => {
+  if (connectionStatus) connectionStatus.textContent = 'Getrennt ❌';
+});
 
-</body>
-</html>
+// Bei jedem empfangenen Update die Oberfläche aktualisieren
+socket.on('updateOverlay', (data) => {
+  if (lastUpdate) lastUpdate.textContent = new Date().toLocaleTimeString();
+
+  if (data.team1 !== undefined && data.score1 !== undefined) {
+    const team1Element = document.getElementById('team1');
+    if (team1Element) team1Element.innerHTML = `${data.team1} <span class="score" id="score1">${data.score1}</span>`;
+  }
+
+  if (data.team2 !== undefined && data.score2 !== undefined) {
+    const team2Element = document.getElementById('team2');
+    if (team2Element) team2Element.innerHTML = `${data.team2} <span class="score" id="score2">${data.score2}</span>`;
+  }
+
+  if (data.spieleliste !== undefined) {
+    const liste = document.getElementById('spieleliste');
+    if (liste) {
+      liste.innerHTML = '';
+      data.spieleliste.forEach(spiel => {
+        const li = document.createElement('li');
+        li.textContent = spiel;
+        liste.appendChild(li);
+      });
+    }
+  }
+});
