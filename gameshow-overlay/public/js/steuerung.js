@@ -1,11 +1,9 @@
-// public/js/steuerung.js
-
 const socket = io();
 
 let score1 = 0;
 let score2 = 0;
-let aktuelleSpieleliste = []; // Struktur: [{ name: "Spielname", done: false, winner: "" }]
-let draggedIndex = null; // Für Drag & Drop
+let aktuelleSpieleliste = [];
+let draggedIndex = null;
 
 function showSavedMessage() {
   const msg = document.createElement('div');
@@ -80,7 +78,7 @@ function renderGameList() {
       moveGame(draggedIndex, targetIndex);
     };
 
-    // Anzeigen: Name + Gewinner (wenn vorhanden)
+    // Text: Spielname + Gewinner
     let text = spiel.name;
     if (spiel.winner) {
       text += ` (${spiel.winner})`;
@@ -91,7 +89,7 @@ function renderGameList() {
       li.classList.add('done');
     }
 
-    // Buttons für jedes Spiel
+    // Buttons
     const erledigtBtn = document.createElement('button');
     erledigtBtn.textContent = '✔️';
     erledigtBtn.className = 'spiel-button';
@@ -190,7 +188,7 @@ function swapTeams() {
 
   document.getElementById('score1Display').textContent = score1;
   document.getElementById('score2Display').textContent = score2;
-  
+
   updateOverlay();
 }
 
@@ -224,7 +222,7 @@ function resetAll() {
   updateOverlay();
 }
 
-/* Beim Verbinden aktuellen Status vom Server holen */
+/* Status beim Verbinden vom Server holen */
 socket.on('updateOverlay', (data) => {
   if (data.team1 !== undefined) document.getElementById('team1Name').value = data.team1;
   if (data.team2 !== undefined) document.getElementById('team2Name').value = data.team2;
