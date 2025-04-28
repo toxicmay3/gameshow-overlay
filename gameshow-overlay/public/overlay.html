@@ -1,30 +1,97 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <title>Gameshow Overlay</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script defer src="js/overlay.js"></script>
-</head>
-<body>
+const socket = io();
 
-<div class="left-column">
+const connectionStatus = document.getElementById('connection-status');
+const lastUpdate = document.getElementById('last-update');
 
-  <!-- Teams oben -->
-  <div class="teams">
-    <div class="team" id="team1">Team 1 <span class="score" id="score1">0</span></div>
-    <div class="team" id="team2">Team 2 <span class="score" id="score2">0</span></div>
-  </div>
+let scrollContainer;
+let scrollList;
+let animationFrame;
+let scrollSpeed = 0.5; // Geschwindigkeit des Scrollens (je kleiner desto langsamer)
 
-  <!-- Spieleliste darunter -->
-  <div class="spieleliste-container">
-    <div class="spieleliste-header">Spieleübersicht</div>
-    <div class="spieleliste-wrapper">
-      <ul id="spieleliste"></ul>
-    </div>
-  </div>
+socket.on('connect', () => {
+  if (connectionStatus) connectionStatus.textContent = 'Verbunden ✅';
+});
 
-</div>
+socket.on('disconnect', () => {
+  if (connectionStatus) connectionStatus.textContent = 'Getrennt ❌';
+});
 
-</body>
-</html>
+socket.on('updateOverlay', (data) => {
+  if (lastUpdate) lastUpdate.textContent = new Date().toLocaleTimeString();
+
+  if (data.team1 !== undefined) {
+    document.getElementById('team1').innerHTML = `${data.team1} <span class="score">${data.score1}</span>`;
+  }
+  if (data.team2 !== undefined) {
+    document.getElementById('team2').innerHTML = `${data.team2} <span class="score">${data.score2}</span>`;
+  }
+
+  if (data.spieleliste !== undefined) {
+    const listeWrapper = document.getElementById('spieleliste');
+    listeWrapper.innerHTML = '';
+
+    data.spieleliste.forEach((spiel) => {
+      const li = document.createElement('li');
+
+      let text = spiel.name;
+      if (spiel.winner) {
+        text += ` (${spiel.winner})`;
+      }
+      li.textContent = text;
+
+      if (spiel.done) {
+        li.style.textDecoration = 'line-through';
+        li.style.color = 'grey';
+      }
+
+      listeWrapper.appendChild(li);
+    });
+
+    // Nach Update neue Scroll-Animation starten
+    prepareScrolling();
+  }
+});
+
+// Scrollen vorbereiten
+function prepareScrolling() {
+  cancelAnimationFrame(animationFrame); // alte Animation stoppen
+
+  scrollContainer = document.querySelector('.spieleliste-container');
+  scrollList = document.querySelector('.spieleliste-wrapper');
+
+  if (!scrollContainer || !scrollList) return;
+
+  // Liste duplizieren für Endlosschleife
+  const originalList = scrollList.querySelector('ul');
+  if (!originalList) return;
+  
+  const existingClone = scrollList.querySelector('ul.clone');
+  if (existingClone) {
+    scrollList.removeChild(existingClone);
+  }
+
+  const clone = originalList.cloneNode(true);
+  clone.classList.add('clone');
+  clone.style.marginTop = '20px'; // Abstand zwischen Original und Clone
+  scrollList.appendChild(clone);
+
+  scrollList.style.transform = 'translateY(0px)';
+  startScrolling();
+}
+
+// Scrollen starten
+function startScrolling() {
+  let pos = 0;
+  const totalHeight = scrollList.scrollHeight / 2; // nur Höhe der originalen Liste
+
+  function step() {
+    pos -= scrollSpeed;
+    if (Math.abs(pos) >= totalHeight) {
+      pos = 0; // sanft zurücksetzen
+    }
+    scrollList.style.transform = `translateY(${pos}px)`;
+    animationFrame = requestAnimationFrame(step);
+  }
+
+  step();
+}
