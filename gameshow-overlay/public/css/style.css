@@ -9,24 +9,13 @@ h1, h2 {
   margin: 10px;
 }
 
-.spieleliste-container {
-  overflow: hidden;
-  height: 300px; /* Höhe des sichtbaren Bereichs */
-  position: relative;
-}
-
-.spieleliste-wrapper {
-  position: absolute;
-  width: 100%;
-}
-
-.spieleliste-wrapper ul {
+#spieleliste {
   list-style: none;
-  margin: 0;
   padding: 0;
+  margin-top: 20px;
 }
 
-.spieleliste-wrapper li {
+#spieleliste li {
   font-size: 1.5rem;
   margin: 15px 0;
 }
