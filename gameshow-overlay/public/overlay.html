@@ -10,23 +10,19 @@
 </head>
 <body>
 
-<div id="teamscore">
-  <h1 id="team1">Team 1 <span class="score">0</span></h1>
-  <h1 id="team2">Team 2 <span class="score">0</span></h1>
+<div id="teams">
+  <div id="team1">Team 1 <span class="score">0</span></div>
+  <div id="team2">Team 2 <span class="score">0</span></div>
 </div>
 
-<h2>Spiele:</h2>
-
-<div class="spieleliste-container">
-  <ul id="spieleliste"></ul>
+<div id="spielekasten">
+  <div class="header">Spieleübersicht</div>
+  <div class="spieleliste-container">
+    <ul id="spieleliste"></ul>
+  </div>
 </div>
 
-<!-- Debug + Steuerung -->
-<div id="controls">
-  <button onclick="changeSpeed(-0.1)">Langsamer</button>
-  <button onclick="changeSpeed(0.1)">Schneller</button>
-</div>
-
+<!-- Debug -->
 <div id="connection-status"></div>
 <div id="last-update"></div>
 
