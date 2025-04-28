@@ -1,20 +1,44 @@
+// public/js/overlay.js
+
 const socket = io();
 
-// Daten live empfangen und Overlay aktualisieren
+// Debug Panel Elemente
+const connectionStatus = document.getElementById('connection-status');
+const lastUpdate = document.getElementById('last-update');
+
+// Verbindung aufgebaut
+socket.on('connect', () => {
+  if (connectionStatus) connectionStatus.textContent = 'Verbunden ✅';
+});
+
+// Verbindung getrennt
+socket.on('disconnect', () => {
+  if (connectionStatus) connectionStatus.textContent = 'Getrennt ❌';
+});
+
+// Overlay aktualisieren bei neuen Daten
 socket.on('updateOverlay', (data) => {
+  if (lastUpdate) lastUpdate.textContent = new Date().toLocaleTimeString();
+
   if (data.team1 !== undefined && data.score1 !== undefined) {
-    document.getElementById('team1').innerHTML = `${data.team1} <span class="score" id="score1">${data.score1}</span>`;
+    const team1Element = document.getElementById('team1');
+    if (team1Element) team1Element.innerHTML = `${data.team1} <span class="score" id="score1">${data.score1}</span>`;
   }
+
   if (data.team2 !== undefined && data.score2 !== undefined) {
-    document.getElementById('team2').innerHTML = `${data.team2} <span class="score" id="score2">${data.score2}</span>`;
+    const team2Element = document.getElementById('team2');
+    if (team2Element) team2Element.innerHTML = `${data.team2} <span class="score" id="score2">${data.score2}</span>`;
   }
+
   if (data.spieleliste !== undefined) {
     const liste = document.getElementById('spieleliste');
-    liste.innerHTML = '';
-    data.spieleliste.forEach(spiel => {
-      const li = document.createElement('li');
-      li.textContent = spiel;
-      liste.appendChild(li);
-    });
+    if (liste) {
+      liste.innerHTML = '';
+      data.spieleliste.forEach(spiel => {
+        const li = document.createElement('li');
+        li.textContent = spiel;
+        liste.appendChild(li);
+      });
+    }
   }
 });
