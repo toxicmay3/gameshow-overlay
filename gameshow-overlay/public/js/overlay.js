@@ -4,7 +4,7 @@ const connectionStatus = document.getElementById('connection-status');
 const lastUpdate = document.getElementById('last-update');
 
 let animationFrame;
-let scrollSpeed = 0.3; // langsam und angenehm
+let scrollSpeed = 0.3; // langsam
 
 socket.on('connect', () => {
   if (connectionStatus) connectionStatus.textContent = 'Verbunden ✅';
@@ -60,7 +60,7 @@ function startScrolling() {
   function step() {
     pos -= scrollSpeed;
     if (Math.abs(pos) >= totalHeight) {
-      pos = 0; // weich neu anfangen
+      pos = 0;
     }
     liste.style.transform = `translateY(${pos}px)`;
     animationFrame = requestAnimationFrame(step);
