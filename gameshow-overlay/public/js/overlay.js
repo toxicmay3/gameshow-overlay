@@ -33,7 +33,14 @@ socket.on('updateOverlay', (data) => {
 
     data.spieleliste.forEach((spiel) => {
       const li = document.createElement('li');
-      li.textContent = spiel.name;
+
+      // Anzeige: Name + Gewinner (nur wenn vorhanden)
+      let text = spiel.name;
+      if (spiel.winner) {
+        text += ` (${spiel.winner})`;
+      }
+
+      li.textContent = text;
 
       if (spiel.done) {
         li.style.textDecoration = 'line-through';
