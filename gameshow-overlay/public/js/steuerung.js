@@ -1,243 +1,182 @@
-// public/js/steuerung.js
-
-const socket = io();
-
-let score1 = 0;
-let score2 = 0;
-let aktuelleSpieleliste = []; // Struktur: [{ name: "Spielname", done: false, winner: "" }]
-let draggedIndex = null; // Für Drag & Drop
-
-function showSavedMessage() {
-  const msg = document.createElement('div');
-  msg.textContent = '✅ Gespeichert!';
-  msg.style.position = 'fixed';
-  msg.style.top = '10px';
-  msg.style.right = '10px';
-  msg.style.background = 'green';
-  msg.style.color = 'white';
-  msg.style.padding = '10px';
-  msg.style.borderRadius = '8px';
-  msg.style.zIndex = '9999';
-  document.body.appendChild(msg);
-  setTimeout(() => document.body.removeChild(msg), 2000);
-}
-
-function updateOverlay() {
-  socket.emit('updateOverlay', {
-    team1: document.getElementById('team1Name').value,
-    team2: document.getElementById('team2Name').value,
-    score1: score1,
-    score2: score2,
-    spieleliste: aktuelleSpieleliste
-  });
-  showSavedMessage();
-}
-
 function save() {
-  updateOverlay();
+  localStorage.setItem('team1', document.getElementById('team1Name').value);
+  localStorage.setItem('team2', document.getElementById('team2Name').value);
+  updateGameList();
 }
 
-function changeScore(team, delta) {
-  if (team === 'team1') {
-    score1 += delta;
-    document.getElementById('score1Display').textContent = score1;
-  } else {
-    score2 += delta;
-    document.getElementById('score2Display').textContent = score2;
-  }
-  updateOverlay();
+function changeScore(team, value) {
+  let score = parseInt(localStorage.getItem(team) || 0);
+  score += value;
+  if (score < 0) score = 0;
+  localStorage.setItem(team, score);
 }
 
 function addGame() {
-  const input = document.getElementById('newGame');
-  const name = input.value.trim();
-  if (name) {
-    aktuelleSpieleliste.push({ name: name, done: false, winner: "" });
-    renderGameList();
-    input.value = '';
-    updateOverlay();
-  }
+  const newGame = document.getElementById('newGame').value;
+  if (!newGame) return;
+  const list = JSON.parse(localStorage.getItem('games') || '[]');
+  list.push({ name: newGame, done: false, winner: null });
+  localStorage.setItem('games', JSON.stringify(list));
+  document.getElementById('newGame').value = '';
+  updateGameList();
 }
 
-function renderGameList() {
+function updateGameList() {
+  const list = JSON.parse(localStorage.getItem('games') || '[]');
   const ul = document.getElementById('spielelisteSteuerung');
   ul.innerHTML = '';
-  aktuelleSpieleliste.forEach((spiel, index) => {
+
+  const team1Name = localStorage.getItem('team1') || 'Team 1';
+  const team2Name = localStorage.getItem('team2') || 'Team 2';
+
+  list.forEach((item, index) => {
     const li = document.createElement('li');
-    li.classList.add('draggable');
-    li.setAttribute('draggable', true);
-    li.dataset.index = index;
+    const container = document.createElement('div');
+    container.style.display = "flex";
+    container.style.alignItems = "center";
+    container.style.gap = "5px";
+    container.style.marginBottom = "5px";
 
-    // Drag & Drop Events
-    li.ondragstart = (e) => {
-      draggedIndex = index;
-      e.dataTransfer.effectAllowed = 'move';
-    };
-    li.ondragover = (e) => e.preventDefault();
-    li.ondrop = (e) => {
-      e.preventDefault();
-      const targetIndex = Number(e.currentTarget.dataset.index);
-      moveGame(draggedIndex, targetIndex);
-    };
-
-    // Anzeigen: Name + Gewinner (wenn vorhanden)
-    let text = spiel.name;
-    if (spiel.winner) {
-      text += ` (${spiel.winner})`;
+    const span = document.createElement('span');
+    let displayName = item.name;
+    if (item.done) {
+      displayName = `~~${displayName}~~`; // Markdown-Style durchstreichen
     }
-    li.textContent = text;
+    span.innerHTML = displayName;
 
-    if (spiel.done) {
-      li.classList.add('done');
+    if (item.winner === "team1") {
+      const winnerSpan = document.createElement('span');
+      winnerSpan.textContent = ` (${team1Name})`;
+      winnerSpan.style.marginLeft = "5px";
+      container.appendChild(winnerSpan);
+    } else if (item.winner === "team2") {
+      const winnerSpan = document.createElement('span');
+      winnerSpan.textContent = ` (${team2Name})`;
+      winnerSpan.style.marginLeft = "5px";
+      container.appendChild(winnerSpan);
     }
 
-    // Buttons für jedes Spiel
-    const erledigtBtn = document.createElement('button');
-    erledigtBtn.textContent = '✔️';
-    erledigtBtn.className = 'spiel-button';
-    erledigtBtn.onclick = () => markGameDone(index);
+    // Buttons
+    const doneButton = document.createElement('button');
+    doneButton.textContent = '✔️';
+    doneButton.className = 'done-button';
+    doneButton.onclick = () => {
+      list[index].done = !list[index].done;
+      localStorage.setItem('games', JSON.stringify(list));
+      updateGameList();
+    };
 
-    const bearbeitenBtn = document.createElement('button');
-    bearbeitenBtn.textContent = '✏️';
-    bearbeitenBtn.className = 'spiel-button';
-    bearbeitenBtn.onclick = () => editGame(index);
+    const editButton = document.createElement('button');
+    editButton.textContent = '✏️';
+    editButton.className = 'edit-button';
+    editButton.onclick = () => {
+      showEditField(li, list, index);
+    };
 
-    const team1WinBtn = document.createElement('button');
-    team1WinBtn.textContent = '🥇';
-    team1WinBtn.className = 'spiel-button';
-    team1WinBtn.onclick = () => setWinner(index, 'team1');
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = '❌';
+    deleteButton.className = 'delete-button';
+    deleteButton.onclick = () => {
+      list.splice(index, 1);
+      localStorage.setItem('games', JSON.stringify(list));
+      updateGameList();
+    };
 
-    const team2WinBtn = document.createElement('button');
-    team2WinBtn.textContent = '🥈';
-    team2WinBtn.className = 'spiel-button';
-    team2WinBtn.onclick = () => setWinner(index, 'team2');
+    const upButton = document.createElement('button');
+    upButton.textContent = '⬆️';
+    upButton.className = 'move-button';
+    upButton.onclick = () => {
+      if (index > 0) {
+        [list[index], list[index - 1]] = [list[index - 1], list[index]];
+        localStorage.setItem('games', JSON.stringify(list));
+        updateGameList();
+      }
+    };
 
-    const resetWinBtn = document.createElement('button');
-    resetWinBtn.textContent = '↩️';
-    resetWinBtn.className = 'spiel-button';
-    resetWinBtn.onclick = () => resetWinner(index);
+    const downButton = document.createElement('button');
+    downButton.textContent = '⬇️';
+    downButton.className = 'move-button';
+    downButton.onclick = () => {
+      if (index < list.length - 1) {
+        [list[index], list[index + 1]] = [list[index + 1], list[index]];
+        localStorage.setItem('games', JSON.stringify(list));
+        updateGameList();
+      }
+    };
 
-    const löschenBtn = document.createElement('button');
-    löschenBtn.textContent = '🗑️';
-    löschenBtn.className = 'spiel-button';
-    löschenBtn.onclick = () => deleteGame(index);
+    const team1Button = document.createElement('button');
+    team1Button.textContent = '🥇 T1';
+    team1Button.className = 'winner1-button';
+    team1Button.onclick = () => {
+      list[index].winner = "team1";
+      localStorage.setItem('games', JSON.stringify(list));
+      updateGameList();
+    };
 
-    li.appendChild(erledigtBtn);
-    li.appendChild(bearbeitenBtn);
-    li.appendChild(team1WinBtn);
-    li.appendChild(team2WinBtn);
-    li.appendChild(resetWinBtn);
-    li.appendChild(löschenBtn);
+    const team2Button = document.createElement('button');
+    team2Button.textContent = '🥈 T2';
+    team2Button.className = 'winner2-button';
+    team2Button.onclick = () => {
+      list[index].winner = "team2";
+      localStorage.setItem('games', JSON.stringify(list));
+      updateGameList();
+    };
 
+    const noWinnerButton = document.createElement('button');
+    noWinnerButton.textContent = '➖';
+    noWinnerButton.className = 'no-winner-button';
+    noWinnerButton.onclick = () => {
+      list[index].winner = null;
+      localStorage.setItem('games', JSON.stringify(list));
+      updateGameList();
+    };
+
+    container.appendChild(span);
+    container.appendChild(doneButton);
+    container.appendChild(editButton);
+    container.appendChild(deleteButton);
+    container.appendChild(upButton);
+    container.appendChild(downButton);
+    container.appendChild(team1Button);
+    container.appendChild(team2Button);
+    container.appendChild(noWinnerButton);
+
+    li.appendChild(container);
     ul.appendChild(li);
   });
 }
 
-function moveGame(from, to) {
-  if (from === to) return;
-  const [movedItem] = aktuelleSpieleliste.splice(from, 1);
-  aktuelleSpieleliste.splice(to, 0, movedItem);
-  renderGameList();
-  updateOverlay();
+function showEditField(li, list, index) {
+  const input = document.createElement('input');
+  input.type = "text";
+  input.value = list[index].name;
+  input.style.marginRight = "5px";
+  input.style.width = "200px";
+
+  const saveButton = document.createElement('button');
+  saveButton.textContent = '💾 Speichern';
+  saveButton.className = 'save-button';
+  saveButton.onclick = () => {
+    if (input.value.trim() !== '') {
+      list[index].name = input.value.trim();
+      localStorage.setItem('games', JSON.stringify(list));
+      updateGameList();
+    }
+  };
+
+  li.innerHTML = '';
+  const container = document.createElement('div');
+  container.style.display = "flex";
+  container.style.alignItems = "center";
+  container.style.gap = "5px";
+  container.appendChild(input);
+  container.appendChild(saveButton);
+  li.appendChild(container);
 }
 
-function markGameDone(index) {
-  aktuelleSpieleliste[index].done = !aktuelleSpieleliste[index].done;
-  renderGameList();
-  updateOverlay();
+function reset() {
+  localStorage.clear();
+  updateGameList();
 }
 
-function editGame(index) {
-  const neuerName = prompt("Neuer Name für das Spiel:", aktuelleSpieleliste[index].name);
-  if (neuerName !== null && neuerName.trim() !== "") {
-    aktuelleSpieleliste[index].name = neuerName.trim();
-    renderGameList();
-    updateOverlay();
-  }
-}
-
-function deleteGame(index) {
-  if (confirm("Willst du dieses Spiel wirklich löschen?")) {
-    aktuelleSpieleliste.splice(index, 1);
-    renderGameList();
-    updateOverlay();
-  }
-}
-
-function setWinner(index, team) {
-  const teamName = team === 'team1' ? document.getElementById('team1Name').value : document.getElementById('team2Name').value;
-  if (teamName.trim() !== '') {
-    aktuelleSpieleliste[index].winner = teamName.trim();
-    renderGameList();
-    updateOverlay();
-  }
-}
-
-function resetWinner(index) {
-  aktuelleSpieleliste[index].winner = "";
-  renderGameList();
-  updateOverlay();
-}
-
-function swapTeams() {
-  const tempName = document.getElementById('team1Name').value;
-  document.getElementById('team1Name').value = document.getElementById('team2Name').value;
-  document.getElementById('team2Name').value = tempName;
-
-  const tempScore = score1;
-  score1 = score2;
-  score2 = tempScore;
-
-  document.getElementById('score1Display').textContent = score1;
-  document.getElementById('score2Display').textContent = score2;
-  
-  updateOverlay();
-}
-
-function markWinner(team) {
-  if (team === 'team1') {
-    document.getElementById('team1Name').value += " (Gewinner)";
-  } else {
-    document.getElementById('team2Name').value += " (Gewinner)";
-  }
-  updateOverlay();
-}
-
-function removeTeam(team) {
-  if (team === 'team1') {
-    document.getElementById('team1Name').value = "";
-  } else {
-    document.getElementById('team2Name').value = "";
-  }
-  updateOverlay();
-}
-
-function resetAll() {
-  document.getElementById('team1Name').value = '';
-  document.getElementById('team2Name').value = '';
-  score1 = 0;
-  score2 = 0;
-  document.getElementById('score1Display').textContent = score1;
-  document.getElementById('score2Display').textContent = score2;
-  aktuelleSpieleliste = [];
-  renderGameList();
-  updateOverlay();
-}
-
-/* Beim Verbinden aktuellen Status vom Server holen */
-socket.on('updateOverlay', (data) => {
-  if (data.team1 !== undefined) document.getElementById('team1Name').value = data.team1;
-  if (data.team2 !== undefined) document.getElementById('team2Name').value = data.team2;
-  if (data.score1 !== undefined) {
-    score1 = data.score1;
-    document.getElementById('score1Display').textContent = score1;
-  }
-  if (data.score2 !== undefined) {
-    score2 = data.score2;
-    document.getElementById('score2Display').textContent = score2;
-  }
-  if (data.spieleliste !== undefined) {
-    aktuelleSpieleliste = data.spieleliste;
-    renderGameList();
-  }
-});
+window.onload = updateGameList;
