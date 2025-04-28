@@ -1,3 +1,4 @@
+<!-- public/admin.html -->
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -28,6 +29,7 @@
 </head>
 <body class="steuerung">
 
+<!-- Login Bereich -->
 <div id="login-screen">
   <h2>Admin Login</h2>
   <input type="password" id="password" placeholder="Passwort eingeben">
@@ -35,9 +37,11 @@
   <p id="login-message"></p>
 </div>
 
+<!-- Admin-Panel Bereich -->
 <div id="admin-panel" style="display:none;">
   <h1>Steuerung</h1>
 
+  <!-- Teamnamen -->
   <div class="input-row">
     <label>Team 1 Name:</label>
     <input id="team1Name" type="text">
@@ -50,6 +54,7 @@
     <button onclick="save()">Speichern</button>
   </div>
 
+  <!-- Punkte -->
   <div class="input-row">
     <span>Team 1 Punkte: <strong id="score1Display">0</strong></span>
     <span style="margin-left:2rem;">Team 2 Punkte: <strong id="score2Display">0</strong></span>
@@ -62,6 +67,7 @@
     <button onclick="changeScore('team2', -1)">Team 2 -1</button>
   </div>
 
+  <!-- Aktionen für Teams -->
   <div class="input-row">
     <button onclick="swapTeams()">Teams tauschen</button>
     <button onclick="markWinner('team1')">Team 1 gewinnt</button>
@@ -70,6 +76,7 @@
     <button onclick="removeTeam('team2')">Team 2 löschen</button>
   </div>
 
+  <!-- Neues Spiel hinzufügen -->
   <div class="input-row">
     <label>Neues Spiel:</label>
     <input id="newGame" type="text">
@@ -81,6 +88,7 @@
     <ul id="spielelisteSteuerung"></ul>
   </div>
 
+  <!-- Alles zurücksetzen -->
   <div class="input-row">
     <button onclick="resetAll()">Alles zurücksetzen</button>
   </div>
