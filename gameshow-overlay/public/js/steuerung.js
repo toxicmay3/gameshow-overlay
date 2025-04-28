@@ -2,65 +2,71 @@
 
 const socket = io();
 
-// Lokale Variablen
+/* Punkt-Variablen */
+let score1 = 0;
+let score2 = 0;
+
+/* Spieleliste */
 let aktuelleSpieleliste = [];
 
-// Daten an Overlay senden
+/* Overlay sofort aktualisieren */
 function updateOverlay() {
   socket.emit('updateOverlay', {
-    team1: document.getElementById('team1Name').value,
-    team2: document.getElementById('team2Name').value,
-    score1: parseInt(document.getElementById('score1')?.textContent || "0"),
-    score2: parseInt(document.getElementById('score2')?.textContent || "0"),
+    team1      : document.getElementById('team1Name').value,
+    team2      : document.getElementById('team2Name').value,
+    score1     : score1,
+    score2     : score2,
     spieleliste: aktuelleSpieleliste
   });
 }
 
-// Speichern der Teamnamen
+/* Team-Namen speichern */
 function save() {
   updateOverlay();
 }
 
-// Punkte verändern
-function changeScore(scoreId, delta) {
-  const scoreElement = document.getElementById(scoreId);
-  if (scoreElement) {
-    let score = parseInt(scoreElement.textContent);
-    score += delta;
-    scoreElement.textContent = score;
-    updateOverlay();
+/* Punkte ändern */
+function changeScore(team, delta) {
+  if (team === 'team1') {
+    score1 += delta;
+    document.getElementById('score1Display').textContent = score1;
+  } else {
+    score2 += delta;
+    document.getElementById('score2Display').textContent = score2;
   }
+  updateOverlay();
 }
 
-// Spiel hinzufügen
+/* Spiel hinzufügen */
 function addGame() {
-  const newGameInput = document.getElementById('newGame');
-  const newGame = newGameInput.value.trim();
-  if (newGame !== '') {
-    aktuelleSpieleliste.push(newGame);
+  const input = document.getElementById('newGame');
+  const name  = input.value.trim();
+  if (name) {
+    aktuelleSpieleliste.push(name);
     renderGameList();
-    newGameInput.value = '';
+    input.value = '';
     updateOverlay();
   }
 }
 
-// Spieleliste neu rendern
+/* Spieleliste anzeigen */
 function renderGameList() {
-  const liste = document.getElementById('spielelisteSteuerung');
-  liste.innerHTML = '';
-  aktuelleSpieleliste.forEach((spiel) => {
+  const ul = document.getElementById('spielelisteSteuerung');
+  ul.innerHTML = '';
+  aktuelleSpieleliste.forEach((s) => {
     const li = document.createElement('li');
-    li.textContent = spiel;
-    liste.appendChild(li);
+    li.textContent = s;
+    ul.appendChild(li);
   });
 }
 
-// Alles zurücksetzen
-function reset() {
+/* Alles zurücksetzen */
+function resetAll() {
   document.getElementById('team1Name').value = '';
   document.getElementById('team2Name').value = '';
-  document.getElementById('score1').textContent = '0';
-  document.getElementById('score2').textContent = '0';
+  score1 = 0; score2 = 0;
+  document.getElementById('score1Display').textContent = score1;
+  document.getElementById('score2Display').textContent = score2;
   aktuelleSpieleliste = [];
   renderGameList();
   updateOverlay();
