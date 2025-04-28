@@ -9,18 +9,27 @@ const io = new Server(http);
 const PORT = process.env.PORT || 3000;
 
 // Admin Passwort
-const ADMIN_PASSWORD = "admin1234"; // Hier kannst du dein eigenes Passwort setzen
+const ADMIN_PASSWORD = "admin1234"; // Hier dein Passwort
+
+// 📦 Speicherung der aktuellen Einstellungen
+let aktuellerStatus = {
+  team1: "",
+  team2: "",
+  score1: 0,
+  score2: 0,
+  spieleliste: []
+};
 
 // Öffentlichen Ordner bereitstellen
 app.use(express.static('public'));
 app.use(express.json());
 
-// Route für Zuschauer (Overlay)
+// Zuschauer-Overlay
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
 
-// Route für Admin (Steuerung)
+// Admin-Steuerung
 app.get('/admin', (req, res) => {
   res.sendFile(__dirname + '/public/admin.html');
 });
@@ -39,8 +48,13 @@ app.post('/check-password', (req, res) => {
 io.on('connection', (socket) => {
   console.log('Ein Client verbunden.');
 
+  // ❗ Beim neuen Verbinden: aktuellen Stand an den neuen Client schicken
+  socket.emit('updateOverlay', aktuellerStatus);
+
+  // Wenn Admin Änderungen sendet → Status aktualisieren und allen schicken
   socket.on('updateOverlay', (data) => {
-    io.emit('updateOverlay', data); // Broadcast an ALLE Clients
+    aktuellerStatus = { ...data }; // Überschreibe gespeicherten Status
+    io.emit('updateOverlay', aktuellerStatus); // An ALLE senden
   });
 
   socket.on('disconnect', () => {
