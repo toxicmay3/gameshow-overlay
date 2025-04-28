@@ -3,9 +3,6 @@ const socket = io();
 const connectionStatus = document.getElementById('connection-status');
 const lastUpdate = document.getElementById('last-update');
 
-let animationFrame;
-let scrollSpeed = 0.3; // langsam und angenehm
-
 socket.on('connect', () => {
   if (connectionStatus) connectionStatus.textContent = 'Verbunden ✅';
 });
@@ -30,7 +27,6 @@ socket.on('updateOverlay', (data) => {
 
     data.spieleliste.forEach((spiel) => {
       const li = document.createElement('li');
-
       let text = spiel.name;
       if (spiel.winner) {
         text += ` (${spiel.winner})`;
@@ -44,29 +40,5 @@ socket.on('updateOverlay', (data) => {
 
       liste.appendChild(li);
     });
-
-    startScrolling();
   }
 });
-
-// Scroll Animation
-function startScrolling() {
-  cancelAnimationFrame(animationFrame);
-
-  const liste = document.getElementById('spieleliste');
-  let pos = 0;
-  const totalHeight = liste.scrollHeight;
-
-  function step() {
-    pos -= scrollSpeed;
-    if (Math.abs(pos) >= totalHeight) {
-      pos = 0;
-    }
-    liste.style.transform = `translateY(${pos}px)`;
-    animationFrame = requestAnimationFrame(step);
-  }
-
-  liste.style.transition = 'none';
-  liste.style.transform = 'translateY(0px)';
-  animationFrame = requestAnimationFrame(step);
-}
