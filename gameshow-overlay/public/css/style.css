@@ -5,11 +5,15 @@ body {
   color: white;
 }
 
-#teams {
+#overlay-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   margin: 20px;
+}
+
+#teams {
+  margin-bottom: 20px;
 }
 
 #teams > div {
@@ -25,8 +29,7 @@ body {
 #spielekasten {
   background: rgba(0, 0, 0, 0.6); /* Schwarz transparent */
   padding: 10px;
-  margin: 20px;
-  width: 250px;
+  width: 300px;
   border-radius: 10px;
 }
 
@@ -40,14 +43,14 @@ body {
 
 .spieleliste-container {
   overflow: hidden;
-  height: 200px; /* Höhe für sichtbare Spiele */
+  height: 300px; /* Höhe für genau 5 Spiele */
   position: relative;
 }
 
 #spieleliste {
   list-style: none;
-  margin: 0;
   padding: 0;
+  margin: 0;
   position: absolute;
   width: 100%;
 }
@@ -55,10 +58,10 @@ body {
 #spieleliste li {
   font-size: 1.2rem;
   text-align: center;
-  margin: 15px 0;
+  margin: 20px 0; /* Abstand, damit 5 Spiele reinpassen */
 }
 
-/* Debug Anzeige */
+/* Debug Anzeigen */
 #connection-status, #last-update {
   font-size: 0.8rem;
   text-align: center;
