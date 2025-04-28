@@ -1,6 +1,4 @@
 // server.js
-// Gameshow-Overlay Server
-
 const express = require('express');
 const app = express();
 const http = require('http').createServer(app);
@@ -8,25 +6,23 @@ const { Server } = require('socket.io');
 const io = new Server(http);
 
 const PORT = process.env.PORT || 3000;
+const ADMIN_PASSWORD = "admin1234"; // Dein Admin Passwort
 
-// Zum Schutz Admin Passwort
-const ADMIN_PASSWORD = "admin1234"; // Später leicht änderbar
-
-// Statische Dateien aus dem 'public'-Ordner bereitstellen
+// Öffentlichen Ordner freigeben
 app.use(express.static('public'));
 app.use(express.json());
 
-// Route für Overlay
-app.get('/overlay', (req, res) => {
-  res.sendFile(__dirname + '/public/overlay.html');
+// Startseite für alle (Overlay Ansicht)
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
 });
 
-// Route für Steuerung (Admin)
+// Admin-Steuerung
 app.get('/admin', (req, res) => {
-  res.sendFile(__dirname + '/public/steuerung.html');
+  res.sendFile(__dirname + '/public/admin.html');
 });
 
-// API zum Checken des Passworts
+// Passwort Check API
 app.post('/check-password', (req, res) => {
   const { password } = req.body;
   if (password === ADMIN_PASSWORD) {
@@ -36,13 +32,12 @@ app.post('/check-password', (req, res) => {
   }
 });
 
-// WebSocket-Verbindung
+// WebSocket Kommunikation
 io.on('connection', (socket) => {
   console.log('Ein Client verbunden.');
 
   socket.on('updateOverlay', (data) => {
-    // Änderung: Nachricht an ALLE Clients senden, nicht nur an andere
-    io.emit('updateOverlay', data);
+    io.emit('updateOverlay', data); // An ALLE senden
   });
 
   socket.on('disconnect', () => {
