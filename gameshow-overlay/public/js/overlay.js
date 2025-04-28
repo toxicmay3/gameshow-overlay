@@ -1,50 +1,44 @@
-function load() {
-  const team1Name = localStorage.getItem('team1') || 'Team 1';
-  const team2Name = localStorage.getItem('team2') || 'Team 2';
+// public/js/overlay.js
 
-  document.getElementById('team1').childNodes[0].textContent = team1Name;
-  document.getElementById('team2').childNodes[0].textContent = team2Name;
-  document.getElementById('score1').textContent = localStorage.getItem('score1') || '0';
-  document.getElementById('score2').textContent = localStorage.getItem('score2') || '0';
+const socket = io();
 
-  updateGames();
-}
+// Debug Panel Elemente
+const connectionStatus = document.getElementById('connection-status');
+const lastUpdate = document.getElementById('last-update');
 
-function updateGames() {
-  const list = JSON.parse(localStorage.getItem('games') || '[]');
-  const ul = document.getElementById('spieleliste');
-  ul.innerHTML = '';
+// Verbindung aufgebaut
+socket.on('connect', () => {
+  if (connectionStatus) connectionStatus.textContent = 'Verbunden ✅';
+});
 
-  const team1Name = localStorage.getItem('team1') || 'Team 1';
-  const team2Name = localStorage.getItem('team2') || 'Team 2';
+// Verbindung getrennt
+socket.on('disconnect', () => {
+  if (connectionStatus) connectionStatus.textContent = 'Getrennt ❌';
+});
 
-  list.forEach(item => {
-    const li = document.createElement('li');
+// Overlay aktualisieren bei neuen Daten
+socket.on('updateOverlay', (data) => {
+  if (lastUpdate) lastUpdate.textContent = new Date().toLocaleTimeString();
 
-    const gameSpan = document.createElement('span');
-    gameSpan.textContent = item.name;
+  if (data.team1 !== undefined && data.score1 !== undefined) {
+    const team1Element = document.getElementById('team1');
+    if (team1Element) team1Element.innerHTML = `${data.team1} <span class="score" id="score1">${data.score1}</span>`;
+  }
 
-    if (item.done) {
-      gameSpan.style.textDecoration = 'line-through';
+  if (data.team2 !== undefined && data.score2 !== undefined) {
+    const team2Element = document.getElementById('team2');
+    if (team2Element) team2Element.innerHTML = `${data.team2} <span class="score" id="score2">${data.score2}</span>`;
+  }
+
+  if (data.spieleliste !== undefined) {
+    const liste = document.getElementById('spieleliste');
+    if (liste) {
+      liste.innerHTML = '';
+      data.spieleliste.forEach(spiel => {
+        const li = document.createElement('li');
+        li.textContent = spiel;
+        liste.appendChild(li);
+      });
     }
-
-    li.appendChild(gameSpan);
-
-    if (item.winner === "team1") {
-      const winnerSpan = document.createElement('span');
-      winnerSpan.textContent = ` (${team1Name})`;
-      winnerSpan.style.marginLeft = '5px';
-      li.appendChild(winnerSpan);
-    } else if (item.winner === "team2") {
-      const winnerSpan = document.createElement('span');
-      winnerSpan.textContent = ` (${team2Name})`;
-      winnerSpan.style.marginLeft = '5px';
-      li.appendChild(winnerSpan);
-    }
-
-    ul.appendChild(li);
-  });
-}
-
-// Live aktualisieren
-setInterval(load, 1000);
+  }
+});
