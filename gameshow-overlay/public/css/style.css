@@ -33,7 +33,7 @@ html, body {
   margin-left: 10px;
 }
 
-/* NEU: Punktanzeige mit ● ○ */
+/* Punktanzeige mit ● ○ */
 .score-dots {
   font-size: 28px;
   margin-left: 10px;
@@ -98,6 +98,7 @@ html, body {
   }
 }
 
+/* Admin Panel */
 .steuerung {
   margin-left: 30px; /* Links 30px Abstand */
   max-width: 700px;
@@ -134,18 +135,11 @@ h1, h2 {
   color: white;
   font-size: 18px;
   cursor: pointer;
-}
-
-#spielelisteSteuerung button {
-  background: transparent;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
   margin-left: 5px;
   padding: 2px 5px;
 }
 
-/* Farben */
+/* Farben für Buttons */
 .done-button {
   color: limegreen;
 }
@@ -176,4 +170,36 @@ h1, h2 {
 
 #spielelisteSteuerung button:hover {
   opacity: 0.8;
+}
+
+/* ➡️ NEU: Best-of-3 Punktebereich */
+.bestof3-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 100px;
+  margin-top: 30px;
+}
+
+.team-circles {
+  display: flex;
+  gap: 10px;
+}
+
+.circle {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: gray;
+  border: 2px solid white;
+  transition: transform 0.3s ease;
+}
+
+.circle.empty {
+  background: transparent;
+  border: 2px dashed gray;
+}
+
+/* ➡️ Extra: Punkte Animation wenn neu gefüllt */
+.circle:not(.empty):hover {
+  transform: scale(1.2);
 }
