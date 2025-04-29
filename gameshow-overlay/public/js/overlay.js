@@ -7,19 +7,16 @@ const socket = io();
 const connectionStatus = document.getElementById('connection-status');
 const lastUpdate = document.getElementById('last-update');
 
-// Hilfsfunktion um Best-of-3 Kreise zu bauen
-function renderBestOf3Circles(points, color) {
-  const maxPoints = 3;
-  let html = '<div class="bestof3-wrapper">';
-  html += '<div class="team-circles">';
-  for (let i = 0; i < maxPoints; i++) {
+// Hilfsfunktion: Einzelne Best-of-3 Punkte rendern
+function renderSingleTeamCircles(points, color) {
+  let html = '<div class="team-circles">';
+  for (let i = 0; i < 3; i++) {
     if (i < points) {
       html += `<span class="circle" style="background:${color};"></span>`;
     } else {
       html += `<span class="circle empty"></span>`;
     }
   }
-  html += '</div>';
   html += '</div>';
   return html;
 }
@@ -53,28 +50,31 @@ socket.on('updateOverlay', (data) => {
       liste.innerHTML = '';
       data.spieleliste.forEach(spiel => {
         const li = document.createElement('li');
-        // Wenn "spiel" ein Objekt ist (mit name, done, etc.)
-        if (typeof spiel === 'object' && spiel.name !== undefined) {
-          li.textContent = spiel.name;
-          if (spiel.done) {
-            li.style.textDecoration = 'line-through';
-            li.style.opacity = '0.5';
-          }
-          if (spiel.winner) {
-            const winnerSpan = document.createElement('span');
-            winnerSpan.textContent = ` (${spiel.winner})`;
-            li.appendChild(winnerSpan);
-          }
-        } else {
-          // Wenn "spiel" nur ein String ist
-          li.textContent = spiel;
+
+        // Nur der Name wird durchgestrichen
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = spiel.name;
+
+        if (spiel.done) {
+          nameSpan.style.textDecoration = 'line-through';
+          nameSpan.style.color = 'grey';
         }
+
+        li.appendChild(nameSpan);
+
+        if (spiel.winner) {
+          const winnerSpan = document.createElement('span');
+          winnerSpan.textContent = ` (${spiel.winner})`;
+          winnerSpan.style.marginLeft = '8px';
+          li.appendChild(winnerSpan);
+        }
+
         liste.appendChild(li);
       });
     }
   }
 
-  // Best-of-3 Anzeige neu aufbauen
+  // Best-of-3 Anzeige
   const bestof3 = document.getElementById('bestof3');
   if (bestof3) {
     const team1Points = data.team1Points || 0;
@@ -84,12 +84,8 @@ socket.on('updateOverlay', (data) => {
 
     bestof3.innerHTML = `
       <div class="bestof3-wrapper">
-        <div class="team-circles">
-          ${renderBestOf3Circles(team1Points, team1Color)}
-        </div>
-        <div class="team-circles">
-          ${renderBestOf3Circles(team2Points, team2Color)}
-        </div>
+        ${renderSingleTeamCircles(team1Points, team1Color)}
+        ${renderSingleTeamCircles(team2Points, team2Color)}
       </div>
     `;
   }
