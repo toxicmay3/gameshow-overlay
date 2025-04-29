@@ -4,6 +4,10 @@ const socket = io();
 
 let score1 = 0;
 let score2 = 0;
+let team1Points = 0;
+let team2Points = 0;
+let team1Color = '#ff0000'; // Standardfarbe: Rot
+let team2Color = '#0000ff'; // Standardfarbe: Blau
 let aktuelleSpieleliste = []; // Struktur: [{ name: "Spielname", done: false, winner: "" }]
 let draggedIndex = null; // Für Drag & Drop
 
@@ -28,16 +32,12 @@ function updateOverlay() {
     team2: document.getElementById('team2Name').value,
     score1: score1,
     score2: score2,
-    spieleliste: aktuelleSpieleliste
+    spieleliste: aktuelleSpieleliste,
+    team1Points: team1Points,
+    team2Points: team2Points,
+    team1Color: team1Color,
+    team2Color: team2Color
   };
-
-  // ➕ Punkteanzeige (● ○) – nur wenn Checkbox aktiv ist
-  const enableDots = document.getElementById('enableScoreDots');
-  if (enableDots && enableDots.checked) {
-    data.team1Score = parseInt(document.getElementById('scoreA').value, 10) || 0;
-    data.team2Score = parseInt(document.getElementById('scoreB').value, 10) || 0;
-    data.maxPoints = parseInt(document.getElementById('maxPoints').value, 10) || 3;
-  }
 
   socket.emit('updateOverlay', data);
   showSavedMessage();
@@ -45,6 +45,7 @@ function updateOverlay() {
 
 function save() {
   updateOverlay();
+  saveToLocalStorage();
 }
 
 function changeScore(team, delta) {
@@ -56,6 +57,25 @@ function changeScore(team, delta) {
     document.getElementById('score2Display').textContent = score2;
   }
   updateOverlay();
+}
+
+function changePoints(team, delta) {
+  if (team === 'team1') {
+    team1Points = Math.max(0, Math.min(3, team1Points + delta));
+    document.getElementById('team1Points').value = team1Points;
+  } else {
+    team2Points = Math.max(0, Math.min(3, team2Points + delta));
+    document.getElementById('team2Points').value = team2Points;
+  }
+  updateOverlay();
+  saveToLocalStorage();
+}
+
+function updateTeamColors() {
+  team1Color = document.getElementById('team1Color').value;
+  team2Color = document.getElementById('team2Color').value;
+  updateOverlay();
+  saveToLocalStorage();
 }
 
 function addGame() {
@@ -198,10 +218,23 @@ function swapTeams() {
   score1 = score2;
   score2 = tempScore;
 
+  const tempPoints = team1Points;
+  team1Points = team2Points;
+  team2Points = tempPoints;
+
+  const tempColor = team1Color;
+  team1Color = team2Color;
+  team2Color = tempColor;
+
   document.getElementById('score1Display').textContent = score1;
   document.getElementById('score2Display').textContent = score2;
-  
+  document.getElementById('team1Points').value = team1Points;
+  document.getElementById('team2Points').value = team2Points;
+  document.getElementById('team1Color').value = team1Color;
+  document.getElementById('team2Color').value = team2Color;
+
   updateOverlay();
+  saveToLocalStorage();
 }
 
 function markWinner(team) {
@@ -227,12 +260,68 @@ function resetAll() {
   document.getElementById('team2Name').value = '';
   score1 = 0;
   score2 = 0;
+  team1Points = 0;
+  team2Points = 0;
+  team1Color = '#ff0000';
+  team2Color = '#0000ff';
+
   document.getElementById('score1Display').textContent = score1;
   document.getElementById('score2Display').textContent = score2;
+  document.getElementById('team1Points').value = team1Points;
+  document.getElementById('team2Points').value = team2Points;
+  document.getElementById('team1Color').value = team1Color;
+  document.getElementById('team2Color').value = team2Color;
+
   aktuelleSpieleliste = [];
   renderGameList();
   updateOverlay();
+  saveToLocalStorage();
 }
+
+function saveToLocalStorage() {
+  const settings = {
+    team1: document.getElementById('team1Name').value,
+    team2: document.getElementById('team2Name').value,
+    score1: score1,
+    score2: score2,
+    team1Points: team1Points,
+    team2Points: team2Points,
+    team1Color: team1Color,
+    team2Color: team2Color,
+    spieleliste: aktuelleSpieleliste
+  };
+  localStorage.setItem('gameshowSettings', JSON.stringify(settings));
+}
+
+function loadFromLocalStorage() {
+  const settings = JSON.parse(localStorage.getItem('gameshowSettings'));
+  if (settings) {
+    document.getElementById('team1Name').value = settings.team1 || '';
+    document.getElementById('team2Name').value = settings.team2 || '';
+    score1 = settings.score1 || 0;
+    score2 = settings.score2 || 0;
+    team1Points = settings.team1Points || 0;
+    team2Points = settings.team2Points || 0;
+    team1Color = settings.team1Color || '#ff0000';
+    team2Color = settings.team2Color || '#0000ff';
+    aktuelleSpieleliste = settings.spieleliste || [];
+
+    document.getElementById('score1Display').textContent = score1;
+    document.getElementById('score2Display').textContent = score2;
+    document.getElementById('team1Points').value = team1Points;
+    document.getElementById('team2Points').value = team2Points;
+    document.getElementById('team1Color').value = team1Color;
+    document.getElementById('team2Color').value = team2Color;
+
+    renderGameList();
+    updateOverlay();
+  }
+}
+
+/* Beim Starten laden */
+window.addEventListener('DOMContentLoaded', () => {
+  loadFromLocalStorage();
+});
 
 /* Beim Verbinden aktuellen Status vom Server holen */
 socket.on('updateOverlay', (data) => {
@@ -249,5 +338,21 @@ socket.on('updateOverlay', (data) => {
   if (data.spieleliste !== undefined) {
     aktuelleSpieleliste = data.spieleliste;
     renderGameList();
+  }
+  if (data.team1Points !== undefined) {
+    team1Points = data.team1Points;
+    document.getElementById('team1Points').value = team1Points;
+  }
+  if (data.team2Points !== undefined) {
+    team2Points = data.team2Points;
+    document.getElementById('team2Points').value = team2Points;
+  }
+  if (data.team1Color !== undefined) {
+    team1Color = data.team1Color;
+    document.getElementById('team1Color').value = team1Color;
+  }
+  if (data.team2Color !== undefined) {
+    team2Color = data.team2Color;
+    document.getElementById('team2Color').value = team2Color;
   }
 });
