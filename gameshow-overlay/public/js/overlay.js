@@ -1,15 +1,17 @@
 // public/js/overlay.js
 
+// WebSocket Verbindung aufbauen
 const socket = io();
 
-// Debug-Panel-Verbindung (falls vorhanden)
+// Debug Panel Referenzen
 const connectionStatus = document.getElementById('connection-status');
 const lastUpdate = document.getElementById('last-update');
 
-// Hilfsfunktion um Punkte-Kreise zu rendern
+// Hilfsfunktion um Best-of-3 Kreise zu bauen
 function renderBestOf3Circles(points, color) {
   const maxPoints = 3;
-  let html = '<div class="bestof3-circles">';
+  let html = '<div class="bestof3-wrapper">';
+  html += '<div class="team-circles">';
   for (let i = 0; i < maxPoints; i++) {
     if (i < points) {
       html += `<span class="circle" style="background:${color};"></span>`;
@@ -18,67 +20,69 @@ function renderBestOf3Circles(points, color) {
     }
   }
   html += '</div>';
+  html += '</div>';
   return html;
 }
 
-// Verbindung hergestellt
+// Socket Status anzeigen
 socket.on('connect', () => {
   if (connectionStatus) connectionStatus.textContent = 'Verbunden ✅';
 });
 
-// Verbindung verloren
 socket.on('disconnect', () => {
   if (connectionStatus) connectionStatus.textContent = 'Getrennt ❌';
 });
 
-// 📦 Bei jedem Update die Oberfläche neu bauen
+// Bei jedem empfangenen Update die Oberfläche aktualisieren
 socket.on('updateOverlay', (data) => {
   if (lastUpdate) lastUpdate.textContent = new Date().toLocaleTimeString();
 
-  // Teamnamen + normale Punkte
-  if (data.team1 !== undefined) {
-    document.getElementById('team1').textContent = data.team1;
-  }
-  if (data.team2 !== undefined) {
-    document.getElementById('team2').textContent = data.team2;
+  if (data.team1 !== undefined && data.score1 !== undefined) {
+    const team1Element = document.getElementById('team1');
+    if (team1Element) team1Element.innerHTML = `${data.team1} <span class="score" id="score1">${data.score1}</span>`;
   }
 
-  // Spieleliste neu bauen
+  if (data.team2 !== undefined && data.score2 !== undefined) {
+    const team2Element = document.getElementById('team2');
+    if (team2Element) team2Element.innerHTML = `${data.team2} <span class="score" id="score2">${data.score2}</span>`;
+  }
+
   if (data.spieleliste !== undefined) {
     const liste = document.getElementById('spieleliste');
-    liste.innerHTML = '';
-
-    data.spieleliste.forEach((spiel) => {
-      const li = document.createElement('li');
-
-      const nameSpan = document.createElement('span');
-      nameSpan.textContent = spiel.name;
-
-      const winnerSpan = document.createElement('span');
-      if (spiel.winner) {
-        winnerSpan.textContent = ` (${spiel.winner})`;
-      }
-
-      if (spiel.done) {
-        nameSpan.style.textDecoration = 'line-through';
-        nameSpan.style.color = 'grey';
-      }
-
-      li.appendChild(nameSpan);
-      li.appendChild(winnerSpan);
-      liste.appendChild(li);
-    });
+    if (liste) {
+      liste.innerHTML = '';
+      data.spieleliste.forEach(spiel => {
+        const li = document.createElement('li');
+        // Wenn "spiel" ein Objekt ist (mit name, done, etc.)
+        if (typeof spiel === 'object' && spiel.name !== undefined) {
+          li.textContent = spiel.name;
+          if (spiel.done) {
+            li.style.textDecoration = 'line-through';
+            li.style.opacity = '0.5';
+          }
+          if (spiel.winner) {
+            const winnerSpan = document.createElement('span');
+            winnerSpan.textContent = ` (${spiel.winner})`;
+            li.appendChild(winnerSpan);
+          }
+        } else {
+          // Wenn "spiel" nur ein String ist
+          li.textContent = spiel;
+        }
+        liste.appendChild(li);
+      });
+    }
   }
 
-  // Best-of-3 Punkte Kreise einfügen
-  const bestofContainer = document.getElementById('bestof3');
-  if (bestofContainer) {
+  // Best-of-3 Anzeige neu aufbauen
+  const bestof3 = document.getElementById('bestof3');
+  if (bestof3) {
     const team1Points = data.team1Points || 0;
     const team2Points = data.team2Points || 0;
     const team1Color = data.team1Color || '#ff0000';
     const team2Color = data.team2Color || '#0000ff';
 
-    bestofContainer.innerHTML = `
+    bestof3.innerHTML = `
       <div class="bestof3-wrapper">
         <div class="team-circles">
           ${renderBestOf3Circles(team1Points, team1Color)}
