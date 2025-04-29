@@ -6,6 +6,15 @@ const socket = io();
 const connectionStatus = document.getElementById('connection-status');
 const lastUpdate       = document.getElementById('last-update');
 
+// Hilfsfunktion zur Punktanzeige (● für Punkt, ○ für leer)
+function renderScoreDots(scored, max) {
+  let output = '';
+  for (let i = 0; i < max; i++) {
+    output += i < scored ? '● ' : '○ ';
+  }
+  return output.trim();
+}
+
 // Verbindung hergestellt
 socket.on('connect', () => {
   if (connectionStatus) connectionStatus.textContent = 'Verbunden ✅';
@@ -20,13 +29,20 @@ socket.on('disconnect', () => {
 socket.on('updateOverlay', (data) => {
   if (lastUpdate) lastUpdate.textContent = new Date().toLocaleTimeString();
 
+  // Punkt-Anzeige (● ○)
+  const maxPoints = data.maxPoints || 3; // Fallback = 3 Punkte
+
   if (data.team1 !== undefined) {
-    document.getElementById('team1').innerHTML = `${data.team1} <span class="score">${data.score1}</span>`;
-  }
-  if (data.team2 !== undefined) {
-    document.getElementById('team2').innerHTML = `${data.team2} <span class="score">${data.score2}</span>`;
+    const punkte = renderScoreDots(data.team1Score || 0, maxPoints);
+    document.getElementById('team1').innerHTML = `${data.team1}: <span class="score-dots">${punkte}</span>`;
   }
 
+  if (data.team2 !== undefined) {
+    const punkte = renderScoreDots(data.team2Score || 0, maxPoints);
+    document.getElementById('team2').innerHTML = `${data.team2}: <span class="score-dots">${punkte}</span>`;
+  }
+
+  // Spieleliste
   if (data.spieleliste !== undefined) {
     const liste = document.getElementById('spieleliste');
     liste.innerHTML = '';
