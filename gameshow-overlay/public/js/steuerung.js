@@ -23,13 +23,23 @@ function showSavedMessage() {
 }
 
 function updateOverlay() {
-  socket.emit('updateOverlay', {
+  const data = {
     team1: document.getElementById('team1Name').value,
     team2: document.getElementById('team2Name').value,
     score1: score1,
     score2: score2,
     spieleliste: aktuelleSpieleliste
-  });
+  };
+
+  // ➕ Punkteanzeige (● ○) – nur wenn Checkbox aktiv ist
+  const enableDots = document.getElementById('enableScoreDots');
+  if (enableDots && enableDots.checked) {
+    data.team1Score = parseInt(document.getElementById('scoreA').value, 10) || 0;
+    data.team2Score = parseInt(document.getElementById('scoreB').value, 10) || 0;
+    data.maxPoints = parseInt(document.getElementById('maxPoints').value, 10) || 3;
+  }
+
+  socket.emit('updateOverlay', data);
   showSavedMessage();
 }
 
