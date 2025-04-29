@@ -70,7 +70,7 @@ html, body {
 #spieleliste li {
   height: 46px;
   line-height: 46px;
-  text-align: center;
+  text-align: text-left;
 }
 
 #spieleliste li.completed,
