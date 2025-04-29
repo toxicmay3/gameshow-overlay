@@ -34,19 +34,21 @@ socket.on('updateOverlay', (data) => {
     data.spieleliste.forEach((spiel) => {
       const li = document.createElement('li');
 
-      // Anzeige: Name + Gewinner (nur wenn vorhanden)
-      let text = spiel.name;
-      if (spiel.winner) {
-        text += ` (${spiel.winner})`;
-      }
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = spiel.name;
 
-      li.textContent = text;
+      const winnerSpan = document.createElement('span');
+      if (spiel.winner) {
+        winnerSpan.textContent = ` (${spiel.winner})`;
+      }
 
       if (spiel.done) {
-        li.style.textDecoration = 'line-through';
-        li.style.color = 'grey';
+        nameSpan.style.textDecoration = 'line-through';
+        nameSpan.style.color = 'grey';
       }
 
+      li.appendChild(nameSpan);
+      li.appendChild(winnerSpan);
       liste.appendChild(li);
     });
   }
