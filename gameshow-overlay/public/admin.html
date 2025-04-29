@@ -83,6 +83,31 @@
     <button onclick="addGame()">Hinzufügen</button>
   </div>
 
+  <!-- Punkteanzeige (● ○) aktivieren -->
+  <h2>Punkteanzeige (● ○)</h2>
+  <div class="input-row">
+    <label>
+      <input type="checkbox" id="enableScoreDots">
+      Punkteanzeige aktivieren
+    </label>
+  </div>
+
+  <div id="scoreDotsControls" style="display: none;">
+    <div class="input-row">
+      <label for="scoreA">Team 1 Punkte:</label>
+      <input type="number" id="scoreA" min="0" max="5" value="0">
+    </div>
+    <div class="input-row">
+      <label for="scoreB">Team 2 Punkte:</label>
+      <input type="number" id="scoreB" min="0" max="5" value="0">
+    </div>
+    <div class="input-row">
+      <label for="maxPoints">Maximale Punkte:</label>
+      <input type="number" id="maxPoints" min="1" max="10" value="3">
+    </div>
+  </div>
+
+  <!-- Spieleliste -->
   <h2>Spieleübersicht (ziehbar)</h2>
   <div class="spieleliste-wrapper">
     <ul id="spielelisteSteuerung"></ul>
@@ -95,23 +120,31 @@
 </div>
 
 <script>
-function checkPassword() {
-  const pw = document.getElementById('password').value;
-  fetch('/check-password', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password: pw })
-  })
-  .then(r => r.json())
-  .then(d => {
-    if (d.success) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('admin-panel').style.display = 'block';
-    } else {
-      document.getElementById('login-message').textContent = 'Falsches Passwort!';
-    }
+  function checkPassword() {
+    const pw = document.getElementById('password').value;
+    fetch('/check-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw })
+    })
+    .then(r => r.json())
+    .then(d => {
+      if (d.success) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('admin-panel').style.display = 'block';
+      } else {
+        document.getElementById('login-message').textContent = 'Falsches Passwort!';
+      }
+    });
+  }
+
+  // Punkteanzeige aktivieren / deaktivieren
+  const enableCheckbox = document.getElementById('enableScoreDots');
+  const scoreControls = document.getElementById('scoreDotsControls');
+
+  enableCheckbox.addEventListener('change', () => {
+    scoreControls.style.display = enableCheckbox.checked ? 'block' : 'none';
   });
-}
 </script>
 
 </body>
