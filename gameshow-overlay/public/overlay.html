@@ -1,44 +1,144 @@
-// public/js/overlay.js
-
-// WebSocket Verbindung aufbauen
-const socket = io();
-
-// Debug Panel Referenzen
-const connectionStatus = document.getElementById('connection-status');
-const lastUpdate = document.getElementById('last-update');
-
-// Socket Status anzeigen
-socket.on('connect', () => {
-  if (connectionStatus) connectionStatus.textContent = 'Verbunden ✅';
-});
-
-socket.on('disconnect', () => {
-  if (connectionStatus) connectionStatus.textContent = 'Getrennt ❌';
-});
-
-// Bei jedem empfangenen Update die Oberfläche aktualisieren
-socket.on('updateOverlay', (data) => {
-  if (lastUpdate) lastUpdate.textContent = new Date().toLocaleTimeString();
-
-  if (data.team1 !== undefined && data.score1 !== undefined) {
-    const team1Element = document.getElementById('team1');
-    if (team1Element) team1Element.innerHTML = `${data.team1} <span class="score" id="score1">${data.score1}</span>`;
-  }
-
-  if (data.team2 !== undefined && data.score2 !== undefined) {
-    const team2Element = document.getElementById('team2');
-    if (team2Element) team2Element.innerHTML = `${data.team2} <span class="score" id="score2">${data.score2}</span>`;
-  }
-
-  if (data.spieleliste !== undefined) {
-    const liste = document.getElementById('spieleliste');
-    if (liste) {
-      liste.innerHTML = '';
-      data.spieleliste.forEach(spiel => {
-        const li = document.createElement('li');
-        li.textContent = spiel;
-        liste.appendChild(li);
-      });
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gameshow Overlay</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="/socket.io/socket.io.js"></script>
+  <script defer src="js/overlay.js"></script>
+  <style>
+    html, body {
+      width: 1920px;
+      height: 1080px;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      background: transparent;
+      color: white;
     }
-  }
-});
+
+    .left-column {
+      position: absolute;
+      top: 150px;
+      left: 30px;
+      width: 300px;
+    }
+
+    .teams {
+      margin-bottom: 30px;
+    }
+
+    .team {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .score {
+      font-size: 32px;
+      margin-left: 10px;
+    }
+
+    .spieleliste-container {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 10px;
+      padding: 10px;
+      width: 300px;
+      height: 300px;
+      overflow: hidden;
+    }
+
+    .spieleliste-header {
+      font-size: 24px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .spieleliste-wrapper {
+      height: 250px;
+      overflow: auto;
+    }
+
+    #spieleliste {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #spieleliste li {
+      font-size: 20px;
+      margin-bottom: 5px;
+      text-align: left;
+    }
+
+    /* Best-of-3 Anzeige */
+    .bestof3-area {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .bestof3-wrapper {
+      display: flex;
+      gap: 100px;
+    }
+
+    .team-circles {
+      display: flex;
+      gap: 10px;
+    }
+
+    .circle {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: gray;
+      border: 2px solid white;
+    }
+
+    .circle.empty {
+      background: transparent;
+      border: 2px dashed gray;
+    }
+
+    /* Debug Bereich */
+    .debug-panel {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 14px;
+      color: lightgrey;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Debug Bereich -->
+<div class="debug-panel">
+  <div id="connection-status">Verbindungsstatus: Unbekannt</div>
+  <div id="last-update">Letztes Update: -</div>
+</div>
+
+<!-- Linke Spalte -->
+<div class="left-column">
+  <div class="teams">
+    <div id="team1" class="team">Team 1 <span class="score" id="score1">0</span></div>
+    <div id="team2" class="team">Team 2 <span class="score" id="score2">0</span></div>
+  </div>
+
+  <div class="spieleliste-container">
+    <div class="spieleliste-header">Spiele</div>
+    <div class="spieleliste-wrapper">
+      <ul id="spieleliste"></ul>
+    </div>
+  </div>
+
+  <!-- Best-of-3 Punkteanzeige -->
+  <div id="bestof3" class="bestof3-area"></div>
+</div>
+
+</body>
+</html>
