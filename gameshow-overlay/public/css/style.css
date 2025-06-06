@@ -50,7 +50,7 @@ html, body {
   padding: 10px;
   overflow: hidden;
   width: 250px;
-  height: 300px; /* Platz für 5 Spiele */
+  height: 500px; /* Platz für 5 Spiele */
 }
 
 .spieleliste-header {
